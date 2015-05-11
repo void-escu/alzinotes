@@ -1,0 +1,52 @@
+Configuration:
+
+System
+/etc/gitconfig
+Program Files\Git\etc\gitconfig
+
+User
+~/.gitconfig
+$HOME\.gitconfig
+
+Project
+
+my_project/.git/config
+
+
+system:
+git config --system
+
+User:
+git config --global
+
+git config
+
+
+
+user.name
+user.email
+
+
+git config --list
+
+git config --global core.editor "vim"
+
+"mate -wl1"
+
+color.ui true
+
+unix git completion
+DL O not zero:  curl -OL https://github.com/git/git/raw/master/contrib/completion/git-completion.bash
+mv to  ~/.git-completion.bash
+add it to .bash_profile or .bashrc
+
+git h <tab>
+
+git help log 
+
+git init
+
+
+
+
+
