@@ -47,6 +47,232 @@ git help log
 git init
 
 
+git add .
+git commit -m "comment"
+- short line summary
+- opt: blank line and more complete description
+
+git log
+ 
+ -n - how many
+ --since=2012-06-15 until
+ --author
+--grep="Init"
+
+2 tree = repo/working - commit to repo/checkout from repo
+Git = 3 tree
+repo/staging index/working
+add in staging; commit to repo
+
+reffer commits as SHA
+
+HEAD - just a pointer
+parent of the next commit
+what was last checked out
+tip of current branch in repository
+
+
+git status  - untracked files
+
+git diff
+git diff --staged
+
+- Shift S enter - trunc lines
+
+git diff --color-words file  - put modified lines one after other
+
+git commit -a (add+commit) -m ""
+ - new/deleted - do not work well
+
+rename
+git mv from to
+
+ 
+revert:
+
+local workspace: git checkout ( repo -> workspace )
+-- stay in current branch
+git checkout -- index.html
+checkpout from repo
+
+unstaging
+git reset HEAD filename
+reseting index
+
+repository - amending commits
+relations thru SHA - linked list
+- only the last commit
+git commit amend -m " "
+
+checkout older files:
+git checkout SHA -- file
+
+
+git diff --staged
+-is modified
+
+git status
+git reset HEAD file
+git checkout -- file
+git status
+- nothing to commit
+
+git revert sha
+
+reset - many commits
+git reset - where the HEAD should point at
+
+--soft - move the pointer does not change staging index or working directory
+
+--mixed (default)
+ - move HEAD , change the staging to match repo
+
+--hard change staging and working to match repository
+
+git clean - clean files - throw away the not tracked files
+git clean -n - ce ar face
+git clean -f - force to do it
+if a file added to stage
+  git clean -f  - do not clean staged
+  git reset HEAD
+  git clean -f
+
+ignoring files
+project/.gitignore
+* ? [aeiou] [0-9]
+negate with !
+
+*.php
+!index.php
+
+all files from folder
+folder/
+
+comments#
+
+
+help:
+https://help.github.com/articles/ignoring-files
+samples:
+https://github.com/github/gitignore
+
+globally ignore
+git config --global core.excludesfile ~/.gitignore_global
+
+git rm --cached file
+- stop file to beeing tracked
+- could have a file that were beeing tracked and we do not want to track it anymore
+
+
+tree-ish
+ancestory
+HEAD^
+HEAD^^ or HEAD^2
+
+git ls-tree HEAD
+
+
+git log --oneline -n --since/after="2012-06-20" --until/before ="2 weeks ago" =3.days
+--author
+--grep="temp"
+git log SHA..SHA --oneline
+git log SHA.. file - file history
+git log -p - for patch
+--stat --summary
+--format=oneline - ful SHA; use short, medium, full, fuller, email, raw, etc
+--graph
+git log --oneline --graph --all --decorate
+
+git show SHA/reference/tree not a file
+
+
+git diff --staged
+git diff SHA file
+git diff SHA..SHA
+git diff --stat --summary SHA..HEAD
+-b (--ignore-space-changes)
+-w (ignore-all-spaces)
+
+
+Branches:
+
+HEAD - where we will do the next commit
+
+git branch
+.git/refs/heads branches
+.git/HEAD = master
+
+git branch name - create a branch
+
+git checkout name - switch  .git/HEAD - name
+
+git checkout -b altname - create and checkout
+
+git diff --color-words  branchtree..branchtree
+git branch --merged
+
+git branch -m or --move   treeSrc treeDest
+
+git branch -d or --delete treeBranch   - if empty or -D to force, or merge before delete
+
+__git_ps1 if in git show branches
+
+export PS1='\W$(__git_ps1 "(%s)") > '
+
+in master
+git merge newbranch
+
+--no-ff   - no fast forward
+--ff-only
+
+MERGING
+current HEAD
+other branch branchname
+
+abort/resolve manually/merge tool
+
+git merge --abort
+
+git add file
+git commit 
+
+git branch --merged
+git log --graph --oneline --all --decorate
+
+git mergetool
+git mergetool --tool=
+
+
+STASH
+ - special area to isolate changes to be used later
+
+git stash save "msg"
+git stash list
+git stash show -p stash@{0}   see as a patch
+
+git stash pop stash@{0}  - also removes
+git stash apply - just apply and leave
+
+dc nu specific il face pe primul
+
+git stash drop stash@{0}
+git stash clear
+
+
+REMOTES:
+
+origin/master - local reference remote server
+
+master -local
+
+push in origin master and remote
+fetch in origin/master
+
+merge origin with master (fast forward because is the same branch - just another head as origin/master)
+
+
+
+
 
 
 
