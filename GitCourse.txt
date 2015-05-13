@@ -271,6 +271,15 @@ fetch in origin/master
 merge origin with master (fast forward because is the same branch - just another head as origin/master)
 
 
+git remote -> list
+git remote add <alias> <url>
+ git remote add origin https://github.com/void-escu/alzinotes.git
+
+git remote -v 
+git remote rm origin
+cat .git/config
+
+
 
 
 
