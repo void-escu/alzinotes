@@ -1,0 +1,2 @@
+# alzinotes
+void memory
