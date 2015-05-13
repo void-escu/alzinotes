@@ -278,6 +278,145 @@ git remote add <alias> <url>
 git remote -v 
 git remote rm origin
 cat .git/config
+ - could have 2 separate links for push/fetch - one RO for fetch and another RW for push
+
+git branch 
+git branch -r - for remote branches
+git branch -a - all
+
+git clone https://... folder
+-b branch that want to clone - default master
+
+tracking 
+-u 
+clone track automatic
+in .git/config we have:
+[branch "master"]
+  remote = origin
+  merge = refs/heads/master
+
+git config branch.non_tracking.remote/merge 
+
+git branch --set-upstream non_tracking origin/non_tracking
+
+
+git fetch 
+- is on origin/master
+git branch -r 
+
+fetch before you : work/push
+fetch often
+
+git diff origin/master..master
+git merge origin/master
+
+git pull = git fetch + git merge
+
+Delete on remote
+old
+git push origin :non_tracking
+shortcut to non_trackig:nontracking - nothing :non_tracking
+
+git push origin --delete non_tracking
+
+
+Admin/colaborators - add to the project
+
+what contribution you want, issues, etc :: do a fork - in your own repo
+at the end - pull request
+
+------
+
+git checkout master
+git fetch
+
+git merge origin/master 
+git checkout -b feedback_form
+
+git commit -m "Add ustomer feedback form"   - all things in local repository
+git fetch - to prepare a remote update
+git push -u origin feedback_form
+
+- mail with remote infos
+2user:
+  (git clone) 
+git checkout master
+git fetch
+git branch too see modifs
+git merge origin/master
+git checkout -b feedback_form origin/feedack_form
+git log
+git show HEAD or SHA
+improve it ... change
+git commit -am "Add ..."
+git fetch
+git push
+...mail
+1st user
+git fetch
+git log -p feedback_form..origin/feedback_form
+git merge origin/feedback_form   -- is in sync - is s fast forward merge if I did not modified
+git checkout master
+git fetch
+git merge origin/master
+
+git merge feedback_form    - same
+git push
+
+
+TOOLS:
+aliases:
+git config --global alias.st "status"  "" if spaces
+co checkout
+ci commit
+br branch
+dfs "diff --stages"
+logg "log --graph --decorate --oneline --abbrev-commit -all"
+
+autologin- caching
+https://help.github.com/articles/set-up-git#password-caching
+
+Windows installed:
+
+git config --global credetial.helper wincred
+
+
+all platforms:
+
+https://help.github.com/articles/generating-ssh-keys/
+
+
+
+
+
+editors with git integration:
+vim
+emacs
+textmate -mac
+eclipse
+netbeans
+visual studio
+intelliJ
+RubyMine
+PHPStorm
+
+
+GUI
+GitWeb
+https://git.wiki.kernel.org/index.php/Gitwebi -- see also InterfacesFrontendsAndTools
+
+win:
+TortoiseGit, GitHub, Git Extensions, SmartGit
+
+
+git hosting
+github.com
+bitbucket.org
+gitorious.org
+
+gitosis - athome
+gitolite - athome
+
 
 
 
