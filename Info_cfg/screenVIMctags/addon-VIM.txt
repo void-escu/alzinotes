@@ -1,0 +1,38 @@
+VIM dev tips
+----------
+ tags - ctags, tags, etc...
+tags -R *
+:tag tagtag
+:tsel  tagtag
+:tnext
+ctrl-ww
+----------
+
+:make - return on first error
+:cn - next error
+:cN, :cp - previous error
+:pop - pop to last source file and ignore make output
+
+:grep -InR "text" where
+
+-these commands keeps state
+:copen - open 'cache' file result
+:cclose
+
+:!make - exec extern => doesn't keep state
+
+----------
+visuals - search, move, etc
+
+set incsearch -> show first match
+set hlsearch -> show yellow bk for all items in selection
+
+[{ -> jump to first '{' of block % - to switch
+gd -> jump from 'use' to local declaration + yellow if hlsearch
+
+vim completion ctrl-N XpmCr -> XpmCreatePixmapFromData (from local and from #includes)
+qa -> record in register ? q stop, @a to use register
+
+:abbr Lunix Linux
+
+[I -> cursor on 'function prototype' - list of all functions used in file

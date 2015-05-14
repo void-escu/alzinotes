@@ -1,0 +1,5572 @@
+The C++ Programming Language   - special edition -
+
+1. Notes to the Reader
+1.8 Advice
+
+1. When you program, you create a concrete representation of the ideas in your solutionto some problem. Let the structure of the program reflect those ideas as directly as possible:
+	a. If you can think of "it" as a separate idea, make it a class.
+	b. If you can think of "it" as a separate entity, make it an object of some class.
+	c. If two classes have a common interface, make that interface an abstract class.
+	d. If the implementations of two classes have something significant in common, make that commonality a base class.
+	e. If a class is a container of objects, make it a template.
+	f. If a function implements an algorithm for a container, make it a template function implementing the algorithm for a family of containers.
+	g. If a set of classes, templates, etc., are logically related, place them in a common namespace.
+
+2. When you define either a class that does not implement either a mathematical entity like a matrix or a complex number or a low-level type such as a linked list:
+	a. Don't use global data (use members).
+	b. Don't use global functions.
+	c. Don't use public data members.
+	d. Don't use friends, except to avoid to avoid [a] or [c].
+	e. Don't put a "type field" in a class; use virtual functions.
+	f. Don't use inline functions. except as a significant optimization.
+
+
+2. A Tour of C++
+2.9 Advice
+
+- Don't panic! All will become clear in time
+- You don't have to know every detail of C++ to write good programs
+- Focus on programming techniques, not on language features
+
+
+3. A Tour of the Standard Library
+3.11 Advice
+
+- Don't  reinvent the wheel; use libraries.
+- Don't believe in magic; understand what your libraries do, how they do it, and at what cost they do it.
+- When you have a choice, prefer the standard library to other libraries.
+- Do not think that the standard library is ideal for everything.
+- Remember to #include the headers for the facilities you use.
+- Remember that standard library facilities are defined in namespace std.
+- use string rather than char*
+- If in doubt use a range-checked vector (such as Vec)
+- Prefer vector<T>, list<T>, and map<key, value> to T[]
+- When adding elements to a container, use push_back() or back_inserter()
+- Use push_back() on a vector rather than realloc() on an array.
+- Catch common exceptions in main()
+
+
+
+
+PART I
+Basic Facilities
+
+4. Types and Declarations
+5. Pointers, Arrays, and Structures
+6. Expressions and Statements
+7. Functions
+8. Namespaces and Exceptions
+9. Source Files and Programs
+
+
+
+4. Types and Declarations
+4.10 Advice
+- Keep scopes small
+- Don't use the same name in both a scope and an enclosing scope.
+- Declare one name (only) per declaration.
+- Keep common and local names short, and keep uncommon and unlocal names longer.
+- Avoid similar-looking names.
+- Maintain a consistent naming style.
+- 
+
+
+5. Pointers, Arrays, and Structures
+6. Expressions and Statements
+7. Functions
+8. Namespaces and Exceptions
+9. Source Files and Programs
+
+
+6.2 Operator Summary
+
+-------------- 
+scope resolution		class_name::member
+scope_resolution		namespace_name::member
+global							::name
+global							::qualified-name
+-------------- 
+member selection		object.member
+member selection		pointer -> member
+subscripting				pointer [expr]
+function call				expr ( expr_list )
+value construction	type ( expr_list )
+post increment			lvalue ++
+post decrement			lvalue --
+type identification	typeid ( type )
+run-time type identification	typeid ( expr )
+run-time checked conversion		dynamic_cast<type> ( expr )
+compile-time checked conversion	static_cast <type> ( expr )
+unchecked conversion						reinterpret_cast<type> ( expr )
+const conversion								const_cast<type> ( expr )
+---------------
+size of object			sizeof expr
+size of type				sizeof ( type )
+pre increment				++lvalue
+pre decrement				--lvalue
+complement					~expr
+not									!expr
+unary minus					-expr
+unary plus					+expr
+address of					&lvalue
+dereference					*expr
+create (allocate)		new type
+create (allocate and initialize)	new type ( expr-list )
+create (place)			new (expr-list) type
+create (place and initialize)			new ( expr-list ) type ( expr-list )
+destroy (deallocate)	delete pointer
+destroy array					delete [] pointer
+cast(type conversion)	(type) expr
+---------------
+member selection		object.*pointer-to-member
+member selection		pointer->*pointer-to-member
+---------------
+multiply						expr * expr
+divide							expr / expr
+modulo (remainder)	expr % expr
+---------------
+add (plus)					expr + expr
+substract (minus)		expr - expr
+---------------
+shift left					expr << expr
+shift right					expr >> expr
+---------------
+less than								expr < expr
+less than or equal			expr <= expr
+greather than						expr > expr
+greather than or equal	expr >= expr
+---------------
+equal								expr == expr
+not equal						expr != expr
+---------------
+bitwise AND					expr & expr
+---------------
+bitwise exclusive OR	expr ^ expr
+---------------
+bitwise inclusive OR	expr | expr
+---------------
+logical AND					expr && expr
+---------------
+logical inclusive OR	expr || expr
+---------------
+conditional expression	expr ? expr : expr
+---------------
+simple assignment		lvalue = expr
+multiply and assign	lvalue *= expr
+divide and assign		lvalue /= expr
+modulo and assign		lvalue %= expr
+add and assign			lvalue += expr
+substract and assign	lvalue -= expr
+shift left and assign	lvalue <<= expr
+shift right and assign	lvalue >>= expr
+AND  and assign			lvalue &= expr
+inclusive OR and assign	lvalue |= expr
+exclusive OR and assign	lvalue ^= expr
+---------------
+throw exception			throw expr
+---------------
+comma(sequencing)		expr , expr
+---------------
+
+
+6.5 Advice
+
+- Prefer the standard library to other libraries and to 'handcrafted code'
+- Avoid complicated expressions
+- If in doubt about operator precedence, parenthesize
+- Avoid explicit type conversion (casts)
+- When explicit type conversion is necessary, prefer the more specific cast operators to the C-style casts
+- Use the T(e) (function-style cast)  notation exclusively for well-defined construction (default values - int() ==0)
+- Avoid expressions with undefined order of evaluation 
+- Avoid goto
+- Avoid do-statements
+- Don't declare a variable until you have a value to initialize it with
+- Keep comments crisp
+- Mantain a consistent indentation style
+- Prefer defining a member operator new() to replacing the global operator new()
+- When reading input, always consider ill-formed input
+
+
+
+7 Functions
+
+static in function = provides a function with "memory"
+
+inf f(const large &arg); int strlen(const char*); - doar pt eficienta - spune compil ca val indicate nu se schimba
+literal, constant, argument that requires conversion can be passed as a const& argument, but not as a non-const& argument.
+
+Arrays can't be passed by value, passed as pointers, so the size() is not available
+solutii - argumente: pointer si size, sau creez o structura cu pointer si size si passez structura ( fct(const Vstr&) )
+
+function overloading
+only parameters, not return type
+- exact match
+- promoting - int to long, float to double, etc
+- conversion int to float, double to int, derived * to base* 
+- user defined conversions
+- elipsis ...
+
+
+functions defined in different non-namespace scopes do not overload
+void f(int);
+void g() {
+	void f(double);
+	f(1); // is not ambigous but it calls f(double)
+	}
+	
+case:
+void f1(char);
+void f1(long);
+void f2(char*);
+void f2(int*);
+void k(int i) {
+	f1(i);
+	f2(0);
+	}
+	- best choice : declare inline void f1(int n) { f1(long(n)); }
+	f2(static_cast<int*>(0);
+
+cand sunt multiple argumente:
+f(int, int)
+f(double, double)
+call f(2.0, 2) is ambigous: first is ok for double, 2 is perfect for int. what to call f(int(2.0), 2) or f(2.0, double(2))?
+
+default arguments
+int f(int, int =0, char* =0) // !!to char*=0 != char* =0
+
+
+const char* Null_cp = 0;
+void error(int severity ...) // "severity" folowed by a zero terminated list of char*s
+{
+	va_list ap;
+	va_start(ap, severity); // arg startup
+	
+	for(;;) {
+		char* p = va_arg(ap, char*);
+		if (p==0) break;
+		cerr << p << ' ';
+		}
+	va_end(ap); // arg cleanup
+	cerr << '\n'; 
+	if(severity) exit (severity);
+}
+int main( int argc, char* argv[] )
+{
+	switch (argc) {
+		case 1:
+			error(0, argv[0], Null_cp);
+			break;
+		case 2:
+			error(0, argv[0], argv[1], Null_cp);
+			break;	
+			}
+}
+
+pointer to a function - signature must correspond, including returning type
+ - can be used to provide a simple sort of polimorfic routines
+ - check if a virtual function or template could be a better alternative
+void error(string s) {}
+
+void (*f1) (string) = &error;  // & optional
+void (*f2) (string) = error // the same
+f1("test"); // ok
+(*f1)("te2"); // same, no need of "*"
+
+//!!!!
+void f(int);
+int f (char);
+
+void (*pf1) (int)  = &f; // void f(int)
+int  (*pf2) (char) = &f; // int f(char)
+// no implicit conversions of arguments or return types when pointers to functions are assigned or initialized
+
+MACROS
+to be avoided because of issues with debug, cross ref, profile, etc. Sometimes compiler dependent.
+no recursive
+
+#define MIN(a,b) ((a)<(b))?(a):(b))
+template<class T>inline T min(T a, T b) {return (a<b)?a:b; }
+
+#define NAME2(a,b) a##b
+int NAME2(hack, cah) (); will produce int hackcah(); for the compiler
+
+#undef X
+
+
+
+7.9 Advice
+
+- Be suspicious of non-const reference arguments; if you want the function to modify its arguments, use ponters and value return instead
+- Use const reference arguments when you need to minimize copying of arguments
+- Use const extensively and consistently
+- Avoid macros
+- Avoid unspecified numbers of arguments
+- Don't return pointers or references to local variables
+- Use overloading when functions perform conceptually the same task on different types
+- When overloading on integers, provide functions to eliminate common ambiguities
+- When considering the use of a pointer to function, consider whether a virtual function or a template would be a better alternative
+- If you must use macros, use ugly names with lots of capital letters
+
+
+8 Namespaces and exceptions
+
+Namespaces
+express logical structure - seen as an exposed interface
+evit conflict de nume - cel mai simplu declar un namespace anonim namespace { val } - acesta are o cauza implicita 'using'
+ - var raman locale, nu sunt expuse ca interfete
+lookup - cand apelez o functie ce nu e gasita, compilatorul se uita si in namespace-urile argumentelor
+aliases - namespace longname_nouse1 {} namespace lnn=longname_nouse1; lnn::var =oper; usor cand schimb versiuni 
+composition ... namespace a, B, namespace c (using namespace a, b)
+
+ideal, namespaces:
+ - express a logically coherent set of features
+ - not give users access to unrelated features
+ - not impose a significant notational burden on users
+
+Interface design alternatives:
+
+- specify namespace Parser to detach 'parser' component. 
+namespace Parser { // interface for implementers
+	//...
+	double expr(bool);
+	//...
+}
+int main()
+{
+	//...
+	Parser::expr(false);
+	//...
+}
+
+- First, obvious, try to define an user interface to the parser - implementation
+
+namespace Parser { ... // interface for implementers 
+	//...
+	double expr(bool);
+	//...
+}
+namespace Parser_interface { // interface for users
+	using Parser::expr;
+}
+- driver is vulnerable to any change in Parser interface
+- restrict Parser_interface's dependency on Parser - only the relevant part of the implementer interface to parser
+--intermediary solution 
+namespace Parser_ { // interface for all users
+	//...
+	double expr(bool);
+	//...
+}
+namespace Parser_interface { // separately named interface for users
+	using Parser_::expr;
+}
+- need consistency of Parser and Parser_ 
+- give Parser_interface a concrete representation - his own expr() 
+namespace Parser_interface { 
+	double expr(bool); // detach 'Parser' which need not be in the same SCOPE in order to define Parser_interface
+}
+double Parser_interface::expr(bool get)
+{
+	return Parser::expr(get);
+}
+- ALL dependencies are minimized. Everything is concrete and properly named.
+
+
+Selection
+
+namespace Hstr {
+class String { ... } 
+String operator+(const &String, const String&);
+String operator+(const &String, const char*);
+}
+namespace MyStr {
+	using Hstr::String;
+	using Hstr::operator+; // use any + from Hstr
+	}
+// features selected - if missing - detect at compile time
+
+Composition and Selection
+namespace His_lib {
+	class String {...};
+	template<class T>class Vector {...};
+	}	
+namespace Her_lib {
+	template<class T>class Vector {...};
+	class String {...};
+	}	
+namespace My_lib {
+	using namespace His_lib; // everything from His_lib
+	using namespace Her_lib; // everything from Her_lib
+	
+	using His_lib::String; // resolve potential clash in favor of His_lib
+	using Her_lib::Vector; // resolve potential clash in favor of Her_lib
+
+	template<class T>class List {} // additional stuff
+// ---------------------------
+  typedef Her_lib::String Her_string; // rename
+  
+  template<class T>class His_vec			// "rename"
+  	: public His_lib::Vector<T> {...};
+}
+
+namespaces are open - could add sthings later, but not in case of a namespace alias	
+
+
+
+EXCEPTIONS
+
+program - modules, diff libs -> error handling in 2 parts:
+ - The reporting of error conditions that cannot be resolved locally
+ - The handling of errors detected elsewhere
+
+
+
+8.4 Advice
+
+- Use namespaces to express logical structure
+- Place every nonlocal name, except main(), in some namespace
+- Design a namespace so that you can conveniently use it without accidentally gaining access to unrelated namespaces
+- Avoid very short names for namespaces
+- If necessary, use namespace aliases to abbreviate long namespace names
+- Avoid placing heavy notational burdens on users of your namespaces
+- Use the Namespace::membernotation when defining namespace members 
+- Use using namespace only for transition  or within a local scope
+- Use exceptions to decouple the treatement of 'errors' from the code dealing with the ordinary processing
+- Use user-defined rather then built-in types as exceptions
+-Don't use exceptions when local control structures are sufficient
+
+
+
+09 Source Files and Programs
+
+-The way the program is organized into files can help emphasize its logical structure, help human reader to understand, 
+help compiler to enforce that logical structure
+	
+sources files (phisycal structure) -> translation unit ->	
+-> should be guided by its logical structure:
+namespaces - files
+
+An object(global) must be defined once in a program. It may be declared (external int x;) many times
+int x; means int x=0; // 0=default initializer for standard types
+
+A variable defined without initializer in global or namespace scope is initialized by default.
+ - not the case of locals variables
+
+A name that can be used in translation unit different from the one in which it was defined is said to have external linkage
+ - referred to only in the translation unit in which it was defined = internl linkage (inline)
+
+const, typedef  = internal linkage
+
+global const and inline in header files only
+
+file 1: extern const int a=77; = external linkage
+file 2: extern const int a; 
+
+An unnamed namespace makes names local to a compilation unit
+
+In C and older C++ programs, the keyword 'static' is (confusingly) used to mean 'use internal linkage'. 
+Don't use 'static' except inside functions and clases
+
+
+9.2.1 Header files
+
+Space is significant in #include ""<> #include < iostream > != #include <iostream>
+
+As rule of thumb it contains:
+
+Named namespaces											namespace N { ... }
+Type definitions											struct Point { int x,y; };
+Template declarations									template<class T> class Z;
+Template definitions 									template<class T> class V { ... };
+Functions declarations								extern int strlen(const char* );
+Inline functions definitions					inline char get(char* p) { ... }
+Data declarations											extern int a;
+Constant definitions 									const float pi = 3.141593;
+Enumerations													enum Light { red, yellow, green};
+Name declarations											class Matrix;
+Include directives										#include <algorithm>
+Macro definitions											#define VERSION 12
+Conditional compilation directives		#ifdef __cplusplus
+Comments															/* comment */
+
+SHOULD NOT contain:
+
+Ordinary function definitions					char get(char* p) { return *p++: }
+Data definitions											int a;
+Aggregate definitions									short tbl[] = { 1, 2, 3 };
+Unnamed namespaces										namespace { ... }
+Exported template definitions					export template<class T>f(T t) { ... }
+export = accessible from another translation unit
+
+9.2.3 ODR - The One-Definition Rule
+- must be a unique definition for a class
+
+Atentie la macrouri si typedef care pot schimba sensul declaratiilor! (in alte declaratii care le utilizeaza)
+
+A template definition can be #included in several translation units as long as the ODR is adhered to. 
+In addition, an exported template can be used given only a declaration:
+//file1.c
+	export template<class T>T twice(T t) {return t+1;}
+//file2.c
+	template<class T>T twice(T t); // declaration
+	int g(int i) { return twice(i); }
+	
+9.2.4 Linkage to Non-C++ Code
+use: extern "C"
+link to C++, C, ASM, etc - that comply with C linkage rules
+
+linkage block - all items are definitions - if i need declaration, i need to apply extern "C" to every variable:
+extern "C" {
+	char* strcpy();
+	int strcmp();
+	//...
+	int g1; //  definition, global scope
+	extern int g2; // declaration
+}
+
+extern "C" int g3; // declaration, not definition
+
+create a C++ header:
+extern "C" {
+#include <string.h>
+}
+OR:
+#ifdef __cplusplus
+extern "C" {
+#endif
+	char* strcpy();
+	int strlen();
+#ifdef __cplusplus
+}
+#endif
+
+9.2.5 Linkage and Pointers to Functions
+typedef int (*FT)(const void*, const void*); // FT has C++ linkage
+extern "C" {
+	typedef int (*FT)(const void*, const void*); // FT has C linkage
+	void qsort(void *p, size_t n, size_t sz, CFT cmp); cmp has C linkage
+	}
+void isort(void *p, size_t n, size_t sz, FT cmp); cmp has C++ linkage
+void xsort(void *p, size_t n, size_t sz, CFT cmp); cmp has C linkage
+extern "C" void ysort(void *p, size_t n, size_t sz, FT cmp); cmp has C++ linkage
+
+int compare(const void*, const void*);	// C++ linkage
+extern "C" int ccmp(const void*, const void*);	// C linkage	
+
+void f(char*v, int sz)
+{
+	qsort(v, sz, 1, &compare); // error
+	qsort(v, sz, 1, &ccmp); 	 // ok
+	
+	isort(v, sz, 1, &compare); // ok
+	isort(v, sz, 1, &ccmp); 	 // error
+}
+
+
+9.3.2 Multiple Header Files 
+- try to divide in small files - for large programs is essential to focus on a relatively small chunk of code 
+- simple dependency, isolate each function - compile faster, better simple code
+
+_impl.h files - used when a logical module consist of many functions that need a shared context.
+
+
+9.4 Programs
+
+9.4.1 Initialization of Nonlocal Variables
+- a variable defined outside any function (that is, global, namespace, and class static) is initialized before main.
+The default initializer value for built-in types and enums is 0.
+in the same translation unit => in order of declaration
+
+!no guaranteed order in different translation units.!
+- no dependency between initializers of global variables
+
+- not possible to catch an exception thrown by an initializer of a global variable
+
+A function returning a reference as alternative to global variable
+int& use_count()
+{
+	static int uc = 0;
+	return uc;
+}
+- act like a global variable
+- is initialized at the first use
+
+!The init of non local (statically allocated) var is guaranteed to work ONLY if main() is executed.!
+
+Variables initialized by constant expressions
+ - cannot depend on the value of objects from other translation units
+ - does not require run-time initialization 
+
+
+9.4.1.1 Program Termination
+- ret from main
+- exit()
+- abort()
+- throwing uncaught exception
+
+if standard exit()
+ - destructors for constructed static objects are called
+if abort(), they are not called
+
+Calling exit() in a destructor may loop infinite
+
+Throw/catch - assure local obj destroyed - best use
+
+Code executed at program termination:
+<cstdlib> // exit, abort, atexit
+void my_cleanup();
+void somewhere()
+{
+	if(atexit(&my_cleanup) == 0) {
+	// my_cleanup will be called at normal termination
+	} else {
+	// oops: too many atexit functions
+	}
+	
+The destructor of a constructed statically allocated obj (global, fct static, class static) created before a call of atexit(f) will be invoked after f is invoked.
+The destructor of such an obj created after a call of atexit(f) will be invoked before f is invoked
+
+9.5 Advice
+
+- Use header files to represent interfaces and to emphasize logical structure
+- #include a header in the source file that implements its functions
+- Don't define global entities with the sme name and similar-but-different meanings in different translation units
+- Avoid non-inline function definitions in headers
+- Use #include only at global scope and in namespaces
+- #include only complete declarations
+- Use include guards
+- #include C headers in namespaces to avoid global names 
+- Make headers self-contained
+- Distinguish between average users' interfaces and expert users' interfaces
+- Avoid nonlocal objects that require run-time initialization in code intended for use as part of non-C++ programs
+
+
+
+10. Classes
+
+A type is a concrete representation of a concept. Ex float + its operations +-*etc provide a concrete approximation of the mathematical concept of areal number.
+A class is a user-defined type.
+The fundamental idea in defining a new type is to separate the incidental details of the implementation from the properties essential to the correct use of it.
+ - separations - interfaces
+ 
+10.2.3 Constructors
+- define constructors with default arguments = generate more options but less functions (code)
+class Date {
+	int d, m, y;
+public:
+	Date(int dd=0, int mm=0, int yy=0);
+	//...
+}
+Date::Date(int dd, int mm, int yy)
+{
+	d = dd ? dd : today.d;
+	m = mm ? mm : today.m
+	y = yy ? yy : today.y;
+	// check if valid
+}
+	
+10.2.4 Static Members
+- hidden pb - 'today' variable - defined and correct - if not, is useless
+- STATIC member=a variable that is part of a class, yet is not part of an object of that class
+	- one copy
+	- a function that needs access to members of a class, yet doesn't need to be invoked for a particular object, is called a static member fct
+	
+Class Date {
+	int d, m, y;
+	static Date default_date;
+public:
+	Date(int dd=0, int mm=0, int yy=0); // today==default_date
+	//...
+	static void set_default(int dd, int mm, int yy); 
+};
+void f() {
+	Date::set_default(4,5,1945); //call to change
+	}
+definitions:
+Date Date::default_date(16,12,1770); 
+void Date::set_default(int d, int m, int y) {
+	default_date = Date(d, m, y);
+	}
+	
+Date copy_of_default_date = Date(); 	
+// we do not need other object to read default date
+
+
+10.2.5 Copying Class Objects
+-default copy element by element
+-other beviour = copy constructor X::X(const X&)
+
+Date d=today; //initialization by copy - copy constructor
+   d=today;   //assignement - redefine
+   
+
+10.2.6 Constant Member Functions
+int day() const {return d; } // do not modify the state of the Date
+inline int Date::year() const // const is necessary in 'outside' definition also
+
+A const member can be invoked from const and non const objects. 
+A non const member can be invoked only for non-const obj.
+
+10.2.7 Self-Reference
+
+void f(Date& d)
+{
+	d.add_day(1).add_month(1).add_year(1);
+}
+
+Date& Date::add_year(int n) {
+	if(d==29 && m==2 && !leapyear(y+n)) {
+		d=1; m=3;
+		}
+	y+=n;
+	return *this;
+	}
+- In a nonstatic member function, the keyword this is a pointer to the obj.
+- In a non-const member function of class X, the type of this is X*
+- not possible to take address of this, or to assign to this. 
+- In a const member function - type is const X*
+
+10.2.7.1 Physical and Logical Constness
+class Date {
+  	bool cache_valid;
+  	string cache;
+  	void compute_cache_value(); // fill cache
+public:
+ 		string string_rep() const; // string representation - interface - should be const
+};
+string Date::string_rep() const 
+{
+	if(cache_valid == false) {
+		Date* th = const_cast<Date*>(this); // cast away const
+		th->compute_cache_value();
+		th->cache_valid = true;
+		}
+		return cache;
+}
+Date d1;
+const Date d2;
+string s1 = d1.string_rep();
+string s2 = d2.string_rep(); // undefined behavior - D2=const, this=const
+
+10.2.7.2 Mutable
+- can never be const
+
+class Date {
+  	mutable bool cache_valid;
+  	mutable string cache;
+  	void compute_cache_value(); // fill (mutable) cache
+public:
+ 		string string_rep() const; // string representation 
+};
+string Date::string_rep() const 
+{
+	if(!cache_valid) {
+		compute_cache_value();
+		cache_valid = true;
+		}
+		return cache;
+}
+Date d3;
+const Date d4;
+string s1 = d3.string_rep();
+string s2 = d4.string_rep(); // ok!
+
+- most apropriate when (only) part of a representation is allowed to change.
+- If most of an object changes while the object remains logically const, it is often better to place the changing data in a separate object ans access it indirectly.
+
+struct cache {
+	bool valid;
+	string rep;
+};
+class Date {
+	cache* c;													// initialize in constructor
+	void compute_cache_value() const; // fill what cache refers to
+public:
+	string string_rep() const; 
+};
+string Date::string_rep() const 
+{
+	if(!c->valid) {
+		compute_cache_value();
+		c->valid = true;
+		}
+		return c->rep;
+}
+
+
+10.2.8. Structures and Classes...
+
+10.3 Efficient User-Defined types
+Concrete types - symplest class for a foundation:
+ - a constructor - how to initialize
+ - a set of function to examine data - const - they do not modify the state
+ - a set of functions allowing to manipulate objects without knowing details of internal data
+ - a set of implicitly defined operations to allow copy
+ - inner class bad_data {}; for reporting errors as exceptions 
+
+class Date {
+public: // public interface
+	enum Month { jan=1, feb, mar...dec}; 
+	
+	class Bad_date {} ; // exception class
+
+	Date ( int dd=0, Month mm=Month(0), int yy=0); // with default args
+/fct to examine
+	int day() const;
+	Month month() const;
+	int year() const;
+	string string_rep() const;			// string representation
+	void char_rep(char s[]) const;  // C style string representation
+
+	static void set_defaut(int, Month, int);
+	
+//function for changing:
+	Date& add_year(int n);  ...month, day
+
+private:
+	int d, m, y; 	// representation
+	static Date default_date;
+};
+
+
+
+10.3.2 Helper Functions
+
+A class has a number of functions associated with it that need not be defined in the class itself because they don't need direct access to the representation.
+date: diff, leapyear, etc
+ - potentially change when date changes
+-could be associated in a namespace: class Date, fct...
+
+10.3.4 The significance of Concrete Classes
+ - single, relatively small thing well and efficiency
+ - not intended to display polymorphic behaviour
+ - emphasize their similarity to built-in types such as int and char
+ - simple and freqently used data Structures
+ 
+
+10.4 Objects
+
+10.4.1 Destructors
+acquiring resources - file, lock, memory - need release
+
+10.4.2 Default constructors
+ - atentie la initializarea tuturor valorilor si a valorilor implicite(variabile compuse)
+struct X {
+	const int a;
+	const int &r;
+	};
+	X x; // error : no default constructor for X - const trebuie initializat - nu merge constructor implicit
+	
+10.4.3 Construction and Destruction
+ 10.4.4 - Automatic object. Created each time the declaration is encountered, destroyed at the exit of the block in which it occurs
+ 10.4.5 - Free-store object. Created by new, destroyed by delete
+ 10.4.6 - Nonstatic member object. Same scope as the container
+ 10.4.7 - Array ellement. Created/destroyed when array is created/destroyed
+ 10.4.8 - Local static. Created when first time declaration is encountered and destroyed at the end of program
+ 10.4.9 - Global, namespace, or class static object. Created once "at the start of the program", destroyed at the end.
+ 10.4.10- Temporary object. Created as part of the evaluation and destroyed at the end of the full expression in which it occurs
+ 10.4.11- Object placed in memory obtained from a user-supplied function guided by arguments supplied in the allocation operations
+ 10.4.12- Union member, which may not have a constructor or a destructor.
+ 
+10.4.4 Local Variables
+10.4.4.1 Copying Objects
+ - attention on implicit copy constructor when we have pointer members
+  - the pointers are not deleted or tried to be deleted many times
+  Table t1;
+  Table t2 = t1; // copy initialization trouble // t2 default ctor is not called, only copy
+  Table t3; 
+  t3=t2 // copy assignement: trouble // t3 remains in memory
+ Default ctor: t1, t2
+ Dtor t1, t2, t3
+ at the end - t1, t2, t3 points to t1, 3x dtor for t1 called; and t3 is free in memory - no cleaning
+
+Table::Table(const Table& t) // copy ctor
+{
+	p = new Name[sz=t.sz];
+	for(int i=0; i<sz; i++) p[i] = t.p[i];
+}
+Table& Table::operator=(const Table& t) // assignment
+{
+	if(this != &t) { // beware of self-assignment: t=t
+		delete[] p;
+		p = new Name[sz = t.sz];
+		for(int i=0; i<sz, i++) p[i] = t.p[i];
+	}
+	return *this;
+}
+
+10.4.5 Free store
+10.4.6 Class Objects as Members
+class Club {
+	string name;
+	Table members;
+	Table officers;
+	Date founded;
+	//...
+	Club(const string& n, Date fd);
+}
+Club::Club(const string& n, Date fd)
+	: name(n), members(), officers(), founded(fd)
+{
+//...
+}
+The members' constructors are called before the body of the containing class' own constructor is executed.
+The constructors are called in the order in which the members are declared in the class rather than the order in which the 
+members appears in the initializer list.
+To avoid confusion, it is best to specify the initializers in the member declaration order.
+The member destructors are called in the reverse order of construction after the body of class' own destructor has been executed.
+If a member constructor needs no arguments, the member need not be mentioned in the member initializer list:
+Club::Club(const string& n, Date fd) // equivalent declaration
+	: name(n), founded(fd)
+{
+//...
+}
+When a class object containing class objects is destroyed, the body of that object's own destructor (if one is specified)
+is executed first and then the members' destructors are executed in reverse order of declaration.
+
+A constructor assembles the execution environment for the member functions for a class from the bottom up (members first).
+The destructor disassembles it from the top down (members last).
+
+10.4.6.1 Necessary Member Initialization
+ - const and reference - init as ctor parameters - error to not initialize
+10.4.6.2 Member Constants
+ - possible to init a static integral constant member by adding a constant-expression initializer
+ class Curious {
+ public:
+ 	static const int c1 = 7;			// ok, but remember definition
+ 	static int c2 = 11; 					// error: not const
+ 	const int c3	= 13; 					// error: not static
+ 	static const int c4 = f(17); 	// error: in-class initializer not constant
+ 	static const float c5 = 7.0;	// error: in-class not integral
+ 	//...
+ 	}
+ const int Curious::c1; 		// necessary, but not repeat initializer here
+ const int* p = &Curious::c1//ok, Curious::c1 has been defined
+
+Alternatively - use enumerator
+	class X {
+		enum { c1=7, c2=11, c3=13, c4=17};
+		//...
+	}
+ 
+ 
+10.4.6.3 Copying members
+ - not allow copying = 'private' copy ctor and operator =
+ - a default assignment cannot be generated if a nonstatic member is a reference, a const, or a user-defined type without a copy assignment.
+ 		- the default copy ctor leaves a reference member referring the same object (in orig & copy) - delete=problem
+
+10.4.7 Arrays
+ - objects without explicit initializer
+	Table tbl[10]; // init by calling Table::Table()
+ - if need to init with values:
+ class Ibuffer {
+ 	string buf;
+ public:
+ 	Ibuffer() {cin >> buf; }
+ 	//...
+ 	};
+ 	Ibuffer words[100]; // each word initialized from cin
+ 	
+Table* t1 = new Table;  - delete t1; 
+Table* t2 = new Table[sz];  - delete[] t2;
+
+If C-stype arrays are too cumbersome, use a class such as vector:
+	vector<Table> v[10]; // no need for delete
+	vector<Table> *p = new vector<Table>(10); // use "delete" instead of "delete[]"
+	delete p;
+
+Using a container (vector) is simpler than writing a new/delete pair. Furthermore, vector provides exeption safety.
+
+
+10.4.8 Local Static store
+The constructor for a local static object is called the first time the thread of control passes through the object's definition.
+void f(int i)
+{
+	static Table tbl;
+	if(i) {
+		static Table tbl2;
+		}
+}
+int main() {
+	f(0);	// only tbl initialized
+	f(1); // tbl2 init
+	f(2);
+	}
+// destructors in reverse order: tbl2, tbl2
+
+
+10.4.9 Nonlocal Store - global scope
+defined only for one file - if many files are linked - the order of construction/destruction is not guaranteed
+
+class X {
+	static Table memtbl; // declaration means nothing
+	};
+Table tbl; // first defined - first
+Table X::memtbl; // second defined - second
+namespace Z {
+	Table tbl2; // third defined - third
+}
+// destructors are called in reverse order
+
+For a lib, best is to 'invent' a type with ctor/dtor for init/cleanup. Would be used once: allocate a static object.
+
+struct Zlib_init {
+	Zlib_init(); // get Zlib ready for use
+	~Zlib_init();// clean up after Zlib
+};
+class Zlib {
+	static Zlib_init x;
+	//...
+};
+If many compilation units are in use - no guarantee of init is done.
+local static objects= first-time switch
+class Zlib {
+	static bool initialized;
+	static void initialize() { /* initialize*/ initialized=true; };
+public:
+	// no ctor
+	void f()
+	{
+		if(initialized==false) initialize();
+		// ...
+		}
+		// ...
+};
+- statically allocated obj without ctors=0
+Alternative:
+int& obj() { static int x = 0; return x; } // initialized upon the first use
+
+
+10.4.10 Temporary Objects
+- is destroyed at the end of the full expression in which it was created
+- main reason - use a high-level data type in a low-level way
+
+void f(string& s1, string& s2, string& s3)
+{
+	const char *cs=(s1+s2).c_str(); // cs is constructed and at the end of line destroyed - obj s1+s2=tmp; cs=pointer to a tmp
+	cout << cs; // could work, but is not guaranteed
+	
+	if(strlen(cs=(s2+s3).c_str()) < 8 && cs[0]=='a') { // cs is valid in ALL condition
+		// cs used here - cs is invalid here, the expression that creates cs is finished
+	}
+}
+- a temporary could be used as initializer for a cosnt reference or a named object.
+void g(const string& , const string&);
+void h(string& s1, string& s2)
+{
+	const string& s = s1 + s2; // s is constructed as tmp obj
+	string ss = s1 + s2;
+	g(s, ss); // we can use s and ss here
+}
+- a temp obj cannot be bound to a non-const reference
+- returning a reference to a local variable is an error
+
+Create explicitly invoking the ctor:
+x.move(Point(x,y));
+
+
+10.4.11 Placement of Objects
+
+- new = free store by default
+considering a simple class:
+class X { public: X(int); //... };
+
+We can place the objects anywhere by providing an allocator with extra arguments:
+
+void* operator new(size_t, void* p) {return p;} // explicit placement operator
+
+void* buf = reinterpret_cast<void*>(0XF00F); // signifiant address
+X* p2 = new(buf)X;  // construct an X at 'buf'; invokes: operator new(sizeof(X), buf)
+
+PLACEMENT SYNTAX = new (buf) X - first default, other parameters user defined
+use placement new to allocate space in some 'Arena's'
+class Arena {
+public:
+	virtual void* alloc(size_t) =0;
+	virtual void  free(void*) =0;
+	// ...
+};
+void* operator new(size_t sz, Arena* a)
+{
+	return a->alloc(sz);
+}
+//....objects of arbitrary types can be allocated from different Arenas as needed
+extern Arena* Persistent;
+extern Arena* Shared;
+
+void g(int i)
+{
+	X* p = new(Persistent)X(i); // X in persistent storage
+	X* q = new(Shared)X(i);     // X in shared memory
+}
+// special care on delete
+void destroy(X* p, Arena*a)
+{
+	p->~X();    // call destructor
+	a->free(p); // free memory
+}
+- for arrays a special operator delete() can be defined (there is no special syntax for placement of arrays)
+
+
+10.4.12 Unions
+A named union is defined as a struct where every member has the same address
+ - could not have static members
+ - not have ctor/dtor & could not protect data against corruption
+
+
+
+10.5 Advice
+- Represent concepts as Classes
+- Use public data (structs) only when it really is just data and no invariant is meaningful for the data members
+- A concrete type is the simplest kind of class. Where applicable, prefer a concrete type overmore complicated classes and over plain data structures
+- Make a function member only if it needs direct access to the representation of a class
+- Use a namespace to make the association between a class and its helper function explicit
+- Make a member function that doesn't modify the value of its object a const member function
+- Make a function that needs access to the representation of a class but needn't be called for a specific object a static member function
+- Use a constructor to establish an invariant for a class
+- If a constructor acquires a resource, its class needs a destructor to release the resource
+- If a class has a pointer member, it needs copy operations (copy ctor and copy assignment)
+- If a class has a reference member, it probably needs copy operations
+- If a class needs a copy operation or a destructor, it probably needs a ctor, a dtor, a copy assignment and a copy ctor
+- Check for self-assignment in copy assignments
+- When writing a copy ctor, be careful to copy every element that needs to be copied (beware of default initializers)
+- When adding a new member to a class, always check to see if there are user-defined ctors that need to be updated to init the member
+- Use enumeration when you need to defineinteger constants in class declarations. Avoid Order dependencies when constructing global or namespace objects.
+- Use first-time switches to minimize order dependencies
+- Remember that temporary objects are destroyed at the end of hte full expression in which they are created.
+
+
+
+11 OPERATOR OVERLOADING 
+
+- concise notation for common operations
+- precedence rules hold
+-uses: concrete types; general and abstract interfaces ( ->, [], () )
+
+
+11.2 Operator functions
+
++       -       *       /         %        ^       &
+|       ~       !       =         <        >       +=
+-=      *=      /=      %=        ^=       &=      |=
+<<      >>      >>=     <<=       ==       !=      <=
+>=      &&      ||      ++        --       ->*     ,
+->      []      ()      new       new[]    delete  delete[]
+
+cannot change the type - unary, binary, ternary; cannot add any ney operators
+
+11.2.1 Binary and Unary Operators
+binary:
+	operator @, aa @ bb:
+		aa.operator@(bb) 
+		operator@(aa, bb)
+unary:
+	operator @, @aa:
+		aa.operator@()
+		operator@(aa)
+	aa@:
+		aa.operator@(int)
+		operator@(aa, int)
+- overload resolution applies	
+	
+class X {
+public:
+	void operator+(int);
+	X(int);
+};
+void operator+(X,X);
+void operator+(X,double);	
+
+void f(X a) {
+	a+1; 	// a.operator+ (1)
+	1+a; 	// ::operator+(X(1), a)
+	a+1.0;// ::operator+(a, A.0)
+}
+
+
+11.2.2 Predefined Meanings for Operators
+operator=, operator[], operator(), operator-> must be nonstatic members - first operands lvalues
+
+if a=int, ++a means a+=1 -> a=a+1 : user must define all operations 
+
+operators "=,&, ','" have predefined meaning for objects. Can be made inaccessible by making private:
+class X {
+private:
+	void operator=(const X&);
+	void operator&();
+	void operator,(const X&);
+	//...
+};
+// a = b; &a; a,b; //errors
+// alternatively they can acquire new meanings
+
+
+11.2.3 Operators and user-defined types
+
+-not possible to define an operator that operates exclusively on pointers
+-an operator with built-in type as first argument cannot be member: 
+	-complex aa+2 -> aa.operator+(2); 2+aa illegal - compiler cannot assume the commutative +; use non member functions
+
+Enumerations are user-defined types -> operators:
+
+enum Day { sun, mon, tue, wed, thu, fri, sat };
+Day& operator++ (Day& d)
+{
+	return d = (sat==d) ? sun : Day(d+1);
+} //prefix ++?
+
+
+11.2.4 Operators in namespaces
+Consider a binary operator @
+If x is of type X and y of type Y, x@y is resolved like this:
+ - if X is a class, look for operator@ as a member of X or as a member of a base of X; and
+ - look for declarations of operator@ in the context surrounding x@y; and
+ - if X is defined in namespace N, look for declarations of operator@ in N; and
+ - if Y is defined in namespace M, look for declarations of operator@ in M
+ 
+- respect overload rules
+- applied to user types, typedef is just a synonym and not a user-defined type
+
+
+A COMPLEX NUMBER TYPE 
+- concrete type
+- operators: arithmetic, comparison, input, output, functions	
+- minimize nr of functions
+	- inside: operators that inherentli modify the value of their first argument: '+='
+	- outside: operators that produce a new value based on arguments: '+'
+	
+class complex {
+	double re, im;
+public:
+	complex& operator+=(complex a); // needs access to representation
+};
+complex operator+(complex a, complex b)
+{
+	complex r=a;
+	return r+=b; // access representation through +=
+}
+// is simpler than +, because no temporary object
+inline complex&
+complex::operator+=(complex a)
+{
+	re+=a.re; 		
+	im+=a.im;
+	return *this;
+}
+//////
+complex r1=x+y+z; // r1=operator+(operator+(x,y),z);
+complex r2=x;
+r2+=y;
+r2+=z;
+
+Mixed mode arithmetic: complex d=2+b; a+2, d+d
+class complex {
+// before
+	complex& operator+=(double a) {
+		re+=a;
+		return *this;
+		}
+};
+complex operator+(complex a, complex b) {
+	complex r=a; return r+=b; }
+complex operator+(complex a, double b) {
+	complex r=a; return r+=b; }
+complex operator+(double a, complex b) {
+	complex r=b; return r+=a; }
+
+Initialization - generic complex(), complex(r), complex(i) -> complex b=3; // complex b=complex(3)
+class complex {
+//before
+	complex(double r=0, double i=0) : re(r), im(i) {} // all 3 compact
+// add copy too
+	complex(const complex &c) : re(c.re), im(c.im) {} // reference is a MUST
+};
+- complex::complex(complex c) : re(c.re), im(c.im) {} // error - any call is infinite recursion - creation of c
+- complex x=2; equivalent complex x(2);
+
+11.3.5 Constructors and Conversions
+declaring many fct are error prone:
+
+complex operator+(complex a, complex b) 
+complex operator+(complex a, double b) 
+complex operator+(double a, complex b) 
+
+a constructor that converts a double to complex will allow to use only 1 fct
+
+bool operator==(complex, complex);
+x==y // operator==(x,y)
+x==3 // operator==(x, complex(3))
+3==y // operator==(complex(3), y)
+
+11.3.6 Literals
+analogy when constructor is simple and inlined: complex(3) - technically is imposible.
+
+11.3.7 Aditional member fct
+real, img, operator =
+
+11.3.8 Helper functions
+acos, asin, atan, operators <<>>, polar coordinates, etc
+
+
+11.4 Conversion Operators
+
+using constructors to specify type conversion - implications:
+ - implicit conversion from a user-defined type to a built-in type (because the built-in types are not classes)
+ - a conversion from a new class to a previously defined class (without modifying the declaration for the old class)
+Avoiding these by using a 'conversion operator' : X::operator T(), where T is a type name;  "X to T"
+
+class Tiny {
+	char v;
+	void assign(int i) { if (i&~077) throw Bad_range(); v=i; } // 077=63=0011 1111
+public:
+	class Bad_range{ };
+	
+	Tiny(int i) { assign(i); }
+	Tiny& operator=(int i) { assign(i); return *this; }
+	
+// enables standard operations on Tiny class - the type beeing converted to is part of the name of the operator and cannot be repeated as return value!
+	operator int() const { return v; } // conversion to int functions
+};
+- a conversion operator resembles a constructor
+- the range is checked whenever a Tiny is initialized by an int or an int is assigned to one
+- no range checking needed when copy
+- whenever a 'Tiny' appears where an 'int' is needed, the appropriate 'int' is used
+
+int main()
+{
+	Tiny c1=2;
+	Tiny c2=62;
+	Tiny c3=c2-c1;	// c3=60
+	Tiny c4=c3; 		// no range check (not necessary)
+	int i=c1+c2; 		// i=64
+
+	c1=c1+c2;				// range error: c1 can't be 64
+	i=c3-64;				// i=-4
+	c2=c3-64;				// range error: c2 can't be -4
+	c3=c4;					// no range check (not necessary)
+}
+
+while (cin>>x) cout<<x;
+cin>>x returns istream&
+That value is implicitly converted to a value indicating the state of 'cin': value tested by 'while'
+- not a good ideea if some information is lost in conversion
+
+if both user-defined conversions and user-defined operators are defined - possible ambiguities
+ int operator+ (Tiny, Tiny)
+ void f(Tiny t, int i) {
+ 	t+i; 	// error, ambigous: operator+(t, Tiny(i)) or int(t)+i?
+ }
+
+11.4.1 Ambiguities
+
+Assignement of a value of type V to an object of class X is legal if:
+ - exist X::operator(Z) so that V is Z
+ - or, there is a unique conversion of V to Z 
+initialization is treated equivalently
+
+class X { ... X(int); X(char*);};
+class Y { ... Y(int); }; 
+class Z { ... Z(X); };
+
+X f(X);
+Y f(Y);
+Z g(Z);
+
+f(1); //error: ambiguous f(X(1)) or f(Y(1))
+f(X(1)); //ok
+g("text"); // error: two user-defined conversions needed; g(Z(X("text"))) not tried
+g(X("Doc")); // ok: g(Z(X("Doc")))
+g(Z("Suzy")); // ok: g(Z(X("Suzy")))
+
+- if a user defined conversion is needed it is considered at last  - first simple conversions
+- the return type is not used in overloading resolution.
+double a1, a2;
+quad r=a1+a2; // double
+quad r=quad(a1)+a2; // quad
+
+Class Real{
+public: 
+	operator double();
+	operator int();
+	//...
+};
+
+void g(Real a) {
+	double d=a; // d=a.double();
+	int i=a; // i=a.int();
+	
+	d=a; // d = a.double();
+	i=a; // i = a.int();
+	
+	
+11.5 Friends
+
+An ordinary member function declaration specifies three logically distinct things:
+ - The function can access the private part of the class declaration
+ - The function is in the scope of the class
+ - The function must be invoked on an object (has a this pointer)
+IF static - first 2 only
+IF friend - first property only - could be placed in private or public part
+
+class Matrix; 
+
+class Vector {
+float v[4];
+///
+friend Vector operator* (const Matrix&, const Vector&);
+};
+
+class Matrix {
+Vector v[4];
+///
+friend Vector operator* (const Matrix&, const Vector&);
+};
+Vector operator* (const Matrix& m, const Vector& v)
+{
+ Vector r;
+ for (int i=0; i<4; i++ ) { // r[i] = m[i]*v;
+ 	r.v[i]=0;
+ 	for (int j=0; j<4; j++) r.v[i] += m.v[i].v[j]*v.v[j];
+ 	}
+ 	return r;
+}
+
+- friend function must be declared like a member function - in the class body.
+- a member function of one class can be friend of another: 
+class List_iterator { int* next(); }
+class List { friend int* List_iterator::next(); }
+- all members of one class could be friend
+class List { friend class List_iterator; }
+
+- should be used only to express closely connected concepts. - choice to be a member class (nested) or friend.
+
+
+11.5.1 Finding Friends
+
+- friend declaration doesn-t introduce names. A friend class must be previously declared in the same scope.
+
+
+
+11.5.2 Friends and Members
+
+-first, try to minimize member functions with access to the representation of a class, try to make access functions
+- ?does it really need access?
+ -- oerations that must be members: constructors, destructors, virtual functions
+ 
+
+class X {
+X(int);
+
+int m1();
+int m2()const;
+
+friend int f1(X&);
+friend int f2(const X&);
+friend int f3(X);
+};
+members invoked for obj of their class only
+99.m1() // error X(99).m1() not tried, nor m2
+-f1 has similar property because implicit conversions are not used for -non const- reference arguments
+f1(99); // error: f1(X(99)) not tried
+f2(99), // ok: f2(X(99)); 
+f3(99); // ok: f3(X(99));
+-an operation modifying the state of a class should be a member or globalfct taking a non-const ref arg (or non-const pointer) 
+-operators that require lvalue op for fundamental types(=,*=, ++, etc) - naturaly defined as members for user defined types
+-if implicit type conversion is desired for all operands of an operation => fct must be nonmember taking -const- ref arg, or a non reference (case of non lvalue operands (+, -, ||, etc) -> friend functions because need access to the representation of their operand class
+Ex: matrice inverse inv(m) vs m.inv() ? preference, but if inv(m) returns another matrice, could be friend, BUT if really inverts (m), should be member
+
+
+11.6 Large Objects (283)
+-references allows passing, pointers cannot redefine the meaning of an operator applied to a pointer
+!! reference to a result cannot be automatic value - allocation problems
+!! operators used more than once -> the result cannot be static 
+!! allocation on free store - copy less expensive than an allocation - avoid copy using a buffer of static obj
+
+const int max_matrix_temp = 7;
+
+Matrix& get_matrix_temp()
+{
+	static int nbuf = 0;
+	static Matrix buf[max_matrix_temp];
+	
+	if(nbuf == max_matrix_temp)  nbuf= 0;
+	return buf[nbuf++];
+}
+
+Matrix& operator+(const Matrix& arg1, Matrix& arg2)
+{
+	Matrix& res = get_matrix_temp();
+	// ...
+	return res;
+}
+- The matrix is copied ONLY if the result is assigned! (pb if access > max_matrix_temp !!! )
+Better Alternatives:
+	- define matrix type as handle (25.7) to a representation. 
+	- define ternary operators and have them automatically invoked for expressions such as a = b +c ; a+b*i (21.4.6.3, 22.4.7)
+
+
+
+11.7 Essential Operators
+in general for a type X, the copy constructor X(const X&) takes care of initialization by an object of the same type X.
+IF X has a destructor- free-store deallocation, the class needs the full complement of functions that control construction, destruction and copying:
+
+Class X {
+X (Sometype); // ctor- create objects
+X (const X&); // copy ctor
+X& operator=(const X&); // copy assignment: cleanup and copy
+~X();	// destructor: cleanup
+//...
+};
+- there are 3 more cases in wich an object is copied:
+		- as a function argument
+		- as a function return value
+		- as an exception
+
+string g(string arg) // string as value = copy ctor
+{ return arg; } 		 // string returned = copy ctor
+int main ()
+{
+	string s = "teststr"; // init - copy ctor
+	s = g(s); 
+}
+when missing copy assignment/ctor are generated by compiler, these copy op are not inherited.
+
+
+11.7.1 Explicit constructors
+- beware of implicit conversions:
+string s = 'a'; // make s a string with int('a') elements
+- make ctor 'explicit' - means it will be invoked explicitly
+
+class String {
+	explicit String (int n);	// explicit
+	String (const char* p);		// implicit
+};
+String s1 = 'a'; 				// error - no implicit char->String conversion
+String s2(10);					// explicit - string with space for 10 chars
+String s3 = String(10); // explicit - string with space for 10 chars
+String s4 = "Brian";		// s4 = String("Brian") - implicit
+String s5("Brain");
+
+void f(String);
+
+String g()
+{
+f(10); 									// error: no implicit int-> String
+f(String(10));
+f("Arthur"); 						// ok: f(String("Arthur"))
+f(s1);
+
+String* p1 = new String ("Eric");
+String* p2 = new String (10);
+
+return 10;							// error: no implicit int -> String conversion
+}
+
+-Stronger compile-time checking for data that is critical in design
+class Year { // functions inlined = no run-time or space cost are added
+	int y;
+public:
+	explicit Year(int i) : y(i) {}		// construct Year from int
+  operator int() const { return y; }// conversion: Year to int
+};
+class Date {
+public:
+	Date(int d, Month m, Year y);
+	};
+Date d3(1978, feb, 21);		// error: 21 is not a year
+Date d4(21, feb, Year(1978)); // ok
+
+
+11.8 Subscripting
+operator[]() - must be a member function  - meaning for class objects.
+
+class Assoc {
+	struct Pair {
+		string name;
+		double val;
+		Pair (string n = " ", double v = 0) : name(n), val(v) {}
+		};
+	vector<Pair> vec;
+	
+	Assoc(const Assoc &);				// private to prevent copying
+	Assoc& operator=(const Assoc&); // private to prevent copying
+	
+public:
+	Assoc() {}
+	const double& operator[](const string&);
+	double& operator[](string&);
+	void print_all() const;
+}; 
+
+double& Assoc::operator[] (string& s)
+{
+	for (vector<Pair>::iterator p=vec.begin(); p!=vec.end(); ++p)
+		if ( s == p->name) return p->val;
+	vec.push_back(Pair(s,0));
+	return vec.back().val;	// return last element
+}
+
+
+void Assoc::print_all() const
+{
+	for(vector<Pair>::const_iterator p=vec.begin(); p!=vec.end(); ++p)
+		cout << p->name << " : " << p->val << '\n';
+}
+
+int main ()	// count occurences of each word on input
+{
+	string buf;
+	Assoc vec;
+	while (cin >> buff) vec[buf]++;
+	vec.print_all();
+}
+
+
+11.9 Function Call
+- function like object - function object - must be a member function
+void negate(complex& c) { c=-c; }
+void f(vector<complex>& aa, list<complex>& ll)
+{
+	for_each(aa.begin(), aa.end(), negate); // negate all vector elements
+	for_each(ll.begin(), ll.end(), negate); // negate all list elements
+}
+// to add a complex number to each element
+void add23(complex& c) 
+{
+	c+=complex(2,3); // ADD to EACH element  
+}
+for_each(aa.begin(), aa.end(), add23); 
+
+class Add {
+	complex val;
+public:
+	Add(complex c) { val = c; }		// save value
+	Add(double r, double i) { val=complex(r,i); }
+	
+	void operator() (complex& c) const { c+=val; }  // add value to argument
+};
+void h(vector<complex>& aa, list<complex>& ll)
+{
+	for_each(aa.begin(), aa.end(), Add(2,3)); // 
+	for_each(ll.begin(), ll.end(), Add(z)); // Add(z).operator()()
+}
+
+- use of operator()() also like:
+  - as substring operator
+  - as a subscripting operator for multidimensional arrays
+
+
+
+11.10 Dereferencing   ->
+
+- can be defined as a unary postfix operator
+class Ptr {
+	X* operator-> ();
+};
+Objects of class Ptr can be used to access members of class X like pointers.
+void f(Ptr p)
+{
+	p->m=7; // (p.operator->()) -> m = 7;
+}
+the transformation of obj p into the pointer p.operator->() does not depend on the member m pointed to.
+-----
+void g(Ptr p)
+{
+	X* q1 = p->;             // syntax error
+	X* q2 = p.operator->();  //ok
+	
+Overloading '->' is useful for creating "smart pointers" - objects that act like pointers and perform also some action
+Ex: define  Rec_ptr for accessing obj of class Rec stored on disk
+
+class Rec_ptr {
+	const char* identifier;
+	Rec* in_core_address;
+	// ...
+public:
+	Rec_ptr(const char* p) : identifier(p), in_core_address(0) {} // name that find the object on disk
+	~Rec_ptr() { write_to_disk(in_core_address, identifier); }    // writes updates
+	Rec* operator->();                                            // brings obj in mem
+};
+
+Rec* Rec_ptr::operator->()
+{
+	if(in_core_address == 0) in_core_address = read_from_disk(identifier);
+	return in_core_address;
+}
+
+struct Rec {
+	string name;
+	//...
+	
+};
+
+void update(const char* s)
+{
+	Rec_ptr p(s);            // get Rec_ptr for s
+	
+	p->name = "noul nume";
+	
+}
+A Rec_ptr would be a template.
+
+Ordinary pointers -> synonym * and [], Given Y and Y* = p
+p->m == (*p).m == p[0].m
+no such guarantee is provided for user-defined operators. The equivalence can be provided where desired:
+
+class Ptr_to_Y {
+	Y* p;
+public:
+	Y* operator->() { return  p;  }
+	Y& operator* () { return *p;  }
+	Y& operator[]() { return p[i];}
+};
+
+If more than one is provided, it might be wise to provide equivalence, 
+just as it is wise to ensure that ++x and x+=1 have the same effect as x=x+1 (++, +=, =, + are provided)
+
+the -> indirection is a key concept 
+overloading -> provides a clean way of representing indirection. ex iterators
+ - operator -> way of providing limited form of 'delegation'
+ - must be member function; its return type must be a pointer or an object of a class to which you can apply ->
+ - when declared for template class, operator ->() is frequently unused, so it makes sense to postpone checking the constraint on the return type until actual use.
+
+
+
+11.11 Increment and Decrement
+
+ - add runtime-checking to smart pointers
+ 
+void f1 (T a)  // traditional use
+{
+	T v[200];
+	T* p=&v[0];
+	p--;            // p is now out of range
+	*p = a;         // Oops: 'p' out of range, uncaught
+	++p;
+	*p = a;         // ok
+}
+-----
+class Ptr_to_T {
+// ...
+};
+
+void f2 (T a)		// checked
+{
+	T v[200];
+	Ptr_to_T p(&v[0], v, 200);
+	p--;            // run-time error: 'p' out of range
+	*p = a;
+	++p;
+	*p = a;         // ok
+}
+-----
+class Ptr_to_T {
+	T* p;
+	T* array;
+	int size;
+public:
+	Ptr_to_T(T* p, T* v, int s);  // bind to array v of size s, initial value p
+	Ptr_to_T(T* p);								// bind to single object, initial value p
+	
+	Ptr_to_T& operator++();       // prefix
+	Ptr_to_T  operator++(int);    // postfix
+	
+	Ptr_to_T& operator--();       // prefix
+	Ptr_to_T  operator--(int);    // postfix
+	
+	T&  operator* ();             // prefix
+};
+-----
+the example is equivalent to:
+void f3(T a)    //checked
+{
+  T v[200];
+  Ptr_to_T p(&v[0], v, 200);
+  p.operator--(0);        // run-time error: 'p' out of range
+  p.operator* () = a;
+  p.operator++();
+  p.operator* () = a;    //ok
+}
+
+	
+
+11.12 A String class
+
+- this string provides:
+	- value semantics, 
+	- character read and write, 
+	- checked and unchecked access, 
+	- stream I/O, 
+	- literal strings as literals, 
+	- equality and concatenation operators.
+
+Ex String employs:
+	- Srep - allows an actual representation be shared between several strings.
+	- Range - thrown for range errors
+	- Cref - to help implement a subscript operator that distingwishes between reading and writing
+	
+class String {
+	struct Srep;		// representation
+	Srep *rep;
+	
+	class Cref;			// reference to char
+public:
+  class Range {  }; // for exceptions
+  
+};
+
+struct String::Srep {
+	char*  s;         // pointer to elements
+	int   sz;         // number of characters
+	int    n;         // reference count
+
+  Srep (int nsz, const char* p)
+  {
+  	n = 1;
+  	sz = nsz;
+  	s = new char[sz+1];  // add space for terminator
+  	strcpy(s,p);
+  }
+  ~Srep() { delete [] s; }
+  
+  Srep* get_own_copy()   // clone if necessary
+  {
+    if(n==1) return this;
+    n--;
+    return new Srep(sz, s);
+  }
+  
+  void assign(int nsz, const char* p)
+  {
+  	if(sz != nsz) {
+  	  delete[] s;
+  	  sz = nsz;
+  	  s = new char[sz+1];
+  	}
+	  strcpy(s, p);
+	}
+private:								// prevent coptying
+   Srep(const Srep&);
+   Srep& operator=(const Srep&);
+};
+
+class String {
+  //...
+  
+  String();                // x = ""
+  String(const char*);     // x = "abc"
+  String(const String&);   // x = other_string
+	String& operator=(const char * );
+	String& operator=(const String&);
+	~String();
+	
+	//...
+};
+
+
+Value semantics - independent strings
+Pointer semantics - shared strings
+
+Value semantis affordable = implemented as handle to its representation
+
+String::String()            // the empty string as default value
+{
+	rep = new Srep(0, "");
+}
+String::String(const String& x) // copy construct
+{
+	x.rep->n++;
+	rep=x.rep;                // share representation
+}
+String::~String()
+{
+	if(--rep->n==0) delete rep;
+}
+String& String::operator=(const String& x)      // copy assignment
+{
+  x.rep->n++;   // protect against "st = st"
+  if(--rep->n==0) delete rep;
+  rep=x.rep;    // share representation
+  return *this;
+}
+
+pseudo copy taking 'const char*' (to allow string literals):
+
+String::String(const char* s)
+{
+	rep=new Srep(strlen(s),s);
+}
+String& String::operator=(const char* s)
+{
+  if(rep->n==1)              // recycle Srep
+     rep->assign(strlen(s), s);
+  else {                     // use new Srep
+     rep->n--;
+     rep=new Srep(strlen(s), s);
+  }
+  return *this;
+}
+access operators:
+class String {
+//...
+  void check(int i) const { if(i<0 || rep->sz<=i) throw Range(); }
+  
+  char read(int i) const { return rep->s[i]; }
+  void write(int i, char c) { rep=rep->get_own_copy(); rep->s[i]=c; } // copy-on-write
+  
+  Cref operator[](int i) { check(i); return Cref(*this, i); }
+  char operator[](int i) const { check(i); return rep->s[i]; }
+  
+	int size() const { return rep->sz; }
+	// ..
+};
+ 
+- idea is to use [] to get checked access for ordinary use, but to allow user to optimize by checking the range once for a set of accesses:
+int hash(const String& s)
+{
+	int h=s.read(0);
+	const int max = s.size();
+	for(int i=1; i<max; i++) h^=s.read(i)>>1; // unchecked access to s
+	return h;
+}
+PB is read/write. String is copy-on-write. To get access funtions inlined they must have Srep in scope -> Srep defined in string or access functions are defined inline outside String and after String::Srep
+To distinguish read/write String::operator[]() returns a Cref when called for a non-const object. Cref = char& it calls String::write() when written to.
+
+class String::Cref { // reference to s[i]
+friend class String;
+	String& s;
+	int i;
+	Cref(String& ss, int ii) : s(ss), i(ii) { }
+	Cref(const Cref& r) : s(r.s), i(r.i) { }
+	Cref();  // not defined, never used
+	
+public:
+	operator char() const { s.check(i); return  s.read(i); }   // yield value
+	void operator=(char c) { s.write(i,c); }                         // change value
+};
+
+For example:
+void f(String s, const String& r)
+{
+	char c1 = s[1]; // c1 = s.operator[](1).operator char()
+	s[1] = 'c';        //  s.operator[](1).operator =('c')
+	
+	char c2 =r[1]; // c2 = r.operator[](1)
+	r[1] = 'd';       // error: assignment to non-lvalue char, r.operator[](1) = 'd'
+}
+ - non-const object s.operator[](1) is Cref(s, 1)
+ 
+To complete String:
+
+class String {
+// ...
+	String& operator+=(const String&);
+	String& operator+=(const char*);
+	
+	friend ostream& operator<<(ostream&, const String&);
+	friend istream&  operator>>(istream& , String&);
+	
+	friend bool operator==(const String& x, const char* s)
+			{ return strcmp(x.rep->s, s) == 0; }
+	friend bool operator==(const String& x, const String& y)
+			{ return strcmp(x.rep->s, y.rep->s) == 0; }
+	friend bool operator!=(const String& x, const char* s)
+			{ return strcmp(x.rep->s, s) != 0; }
+	friend bool operator!=(const String& x, const String& y)
+			{ return strcmp(x.rep->s, y.rep->s) != 0; }
+};
+
+String operator+(const String&, const String&);
+String operator+(const String&, const char *);
+ - I/O and concatenation as exercise
+
+String f(String a, String b)
+{
+	a[2] = 'x';
+	char c = b[3];
+	cout << "in f: " << a << ' ' << b << ' '  << c << endl;
+	return b;
+}
+
+int main()
+{
+	String x, y;
+	cout << "please enter two strings : \n";
+	cin >> x >> y;
+	cout  << " input : " << x << ' ' << y << endl;
+	String z=x;
+	y=f(x,y);
+	if (x != z) cout <<  "  x corrupted!\n";
+	x[0] = '!';
+	if(x == z) cout << " write failed!\n";
+	cout << " exit:  " << x << ' ' << y << ' ' << z << endl;
+}
+
+
+11.13 Advice
+
+Define operators primarily to mimic conventional usage (11.1)
+For large operands use -const- reference argument types (11.6)
+For large results consider optimizing in return (11.6)
+Prefer the default copy operations if apropriate for a class (11.3.4)
+Redefine or prohibit copying if the default is not appropriate for a type (11.2.2)
+Prefer member functions over nonmembers for operations that need access to the representation (11.5.2)
+Prefer nonmember functions over members for operations that do not need access to the representation(11.5.2)
+Use namespaces to associate helper functions with 'their' class (11.2.4)
+Use nonmember functions for symmetric operators (11.3.2)
+Use () for subscripting multidimensional arrays (11.9)
+Make constructors that take a single "size argument" -explicit- (by default single arg = implicit conversion)
+For non-specialized uses, prefer the standard -string- (cap 20)  to the result of specific dev like this(11.12) 
+Be cautious about introducing implicit conversions
+Use member functions to express operators that require an lvalue as its left-hand operand (11.3.5)
+
+
+
+12 Derived Classes
+
+struct Employee {
+	string first_name, family_name;
+	char middle_initial;
+	Date hiring_date;
+	short department;
+//...
+};
+
+struct Manager {
+	Employee emp; // Manager's employee record
+	list <Employee *> group;  // people managed
+	short level;
+	// ...
+};
+- manager is employee - obvious for human reader - data is stored in emp member
+- nothing that tells the compiler and other tools that: Manager IS an Employee
+- a Manager* is not en Employee* 
+- cannot put a Manager into a list of Employee - need explicit type conversion on a Manager, or put only emp member
+
+struct Manager : public Employee {
+	list <Employee*> group:
+	short level;
+	//...
+}
+- representation - pointer derived from its base class derived -> base
+relationship : inheritance (inherit properties)
+base class called -superclass- and the derived class - subclass
+
+a Manager is also Employee - so a Manager* can be used as an Employee*
+
+void g( Manager mm, Employee ee) 
+{
+	Employee* pe = &mm; // ok, every Manager is an Employee
+	Manager*	pm = &ee;	// error - No conversion
+
+	pm->level  = 2; 	// ERR: ee doesn't have a level
+	
+	pm = static_cast<Manager*> (pe);  // forced conversion - ok
+	
+	pm->level = 2; //ok
+}
+
+class Employee; // declaration only
+
+class Manager : public Employee { // ERR: Employee is not defined
+//...
+}
+
+
+
+12.2.1 Member functions
+
+- simple data - no useful
+- information as proper type that provides a suitable set of operations that present the concept (without tying us to details of particular representation.
+
+class Employee {
+	string first_name, family_name;
+	char middle_initial;
+//...
+public:
+	void print() const;
+	string full_name() const
+	{ return  first_name + '  ' + middle_initial + '  ' + family_name; }
+	// ...
+};
+
+class Manager  : public Employee {
+	// ...
+public:
+		void print() const;
+		// ...
+};
+- can use public and protected
+- cannot use private
+
+Cleanest solution is to use only public members
+void Manager::print() const
+{
+	Employee::print();	// print Employee information
+	cout << level; 				// print specific
+	//...
+}
+
+
+12.2.2  Constructors and Destructors
+
+- if a base class has constructors, then a constructor must be invoked
+- default constructors can be invoked implicitly
+- if all constructors for a base require arguments, then a constructor for that base must be explicitly called.
+- Members and bases are constructed in order of declaration in the class and destroyed in the reverse order.
+
+
+12.2.3 Copying
+
+Copying of class objects is defined by the copy constructor and assignments
+
+class Employee {
+	// ...
+	Employee & operator= (const Employee&);
+	Employee(const Employee&);
+};
+
+void f(const Manager& m)
+{
+	Employee e = m;		// construct e from Employee part of m - SLICING - to be avoided
+	e = m											// assign Employee part of m to e - SLICInG - to be avoided
+}
+
+Employee copy fct do not know anything about Managers - TO BE AVOIDED SLICING - surprises and errors 
+
+One reason to pass pointers and referenes to objects of classes in a hierarchy is to avoid slicing
+ - other reasons are to preserve polymorphic behaviour and to gain efficiency
+ 
+ If copy assignment operator is not defined:
+  - compiler will generate one
+	- assignment operator are not inherited
+Constructors are never inherited
+
+
+12.2.4 Class Hierarchies
+
+class c1 { };
+class c2 : public c1 {  };
+class c3 : public c2 {  };
+
+- a class hierarchy - most often a tree, but could be a graph -> graph of clases
+
+
+12.2.5 Type Fields
+
+Given a pointer to -type- Base*, to wich derived type does the object pointed toreally belong?
+ 1. Ensure that only objects of a single type are pointed to
+ 2. Place a type field in the base class for the functions to inspect
+ 3. Use dynamic_cast
+ 4. Use virtual functions
+
+Pointers to base clases are commonly used in the design of -container classes- (set, vector, list)
+	- solution 1 =>  homogenous lists (obj of same type)
+	- 2,3,4 => heterogenous lists -> lists of (pointers to) objects of several differents types
+		- 3 -> language suported variant of solution 2
+		- 4 -> special type-safe variation of solution 2
+		- combin 1 & 4 = interesting and powerfull - cleaner code than 2 and 3
+
+SYMPLE type-field (best avoided)
+
+struct Employee {
+	enum Empl_type (M, E);
+	Empl_type type;
+	
+	Employee() : type(E) {}
+	
+	string first_name, family_name;
+	char middle_name;
+	
+	Date hiring_date;
+	short department;
+	//...
+};
+
+struct Manager : public Employee {
+	Manager() {type=M;}
+
+	list<Employee*> group;
+	short level;
+	//...
+};
+
+
+void print_employee(const Employee* e)
+{
+	switch (e->type) {
+	case Employee::E :
+					cout << e->family_name << '\t' << e->department << endl;
+					//...
+					break;
+	case Employee::M :
+					cout << e->family_name << '\t' << e->department << endl;
+					//...
+					const Manager* p = static_cast<const Manager*> (e);
+					cout << ' level : ' << '\t' << p->level << endl;
+					//...
+					break;
+	}
+}
+and a  list:
+void print_list(const list<Employee*>& elist)
+{
+	for(list<Employee*>::const_iterator p = elist.begin() :  p != elist.end() ; ++p)
+		print_employee(*p);
+}
+
+-- Weakness: depends on programmer manipulating types - cannot be checked by compiler
+		- worse: functions like print_employee() are organized to take advantage of the commonality of the classes involved.
+void print_employee(const Employee* e)
+{
+	cout << e->family_name << '\t' << e->department << endl;
+	if(e->type == Employee::M ) {
+			const Manager* p = static_cast<const Manager*> (e);
+			cout << ' level : ' << '\t' << p->level << endl;
+			//...
+	}
+}
+MAINTENANCE problems
+ - finding all tests on type field, understanding the use - dificult
+ - adding anuther type - many changes
+ - use of an explicit type conversion - strong hint that improvement is possible
+
+
+12.2.6 Virtulal Functions
+- compiler and loader - guarantee the correct correspondance between objects and fct
+
+class Employee {
+	string first_name....
+//...
+public:
+	Employee(const string& name, int dept);
+	virtual void print() const;
+};
+- keyword -virtual- indicates that print() can act as an interface to the print() defined in this class and the print() functions from derived classes
+- is sometimes called a -method-.
+- if not defined = pure virtual
+- a derived class defines a new virtual functions only if it is needed
+
+class Manager : public Employee {
+// ...
+public:
+...
+	void print() const;
+}
+void Manager::print() const
+{
+...
+}
+ - same name, same set of arguments - override the base class 
+ - print_employee() is now unnecessary
+
+void print_list(const list<Employee*>& s)
+{
+	for (list<Employee*>::const_iterator p = s.begin(); p != s.end();  ++p)
+		(*p)->print();
+}
+or even:
+void print_list(const list<Employee*>& s)
+{
+	for_each ( s.begin(), s.end();  mem_fun(&Employee::print));
+}
+
+- ! print_list() could be written and compiled before the specific derived class Manager was even conceived of!  (a key aspect of classes)
+
+- A type with virtual functions - polymorphic
+	- polymorphic behaviour = virtual functions + objects manipulated by pointers or references. - The OBJECT TYPE is not known by compiler
+	- virtual function inlined = inline substitution can be used for calls specified using ::
+
+
+
+12.3 Abstract Classes
+
+interfaces only - no sense of object - shape vs objects derived
+
+class Shape {
+public:
+	virtual void rotate (int) { error("Shape::rotate"); }  // inelegant
+	virtual void draw() { error("Shape::draw");}
+};
+Shape s; // silly: "shapeless shape"
+
+class Shape { // abstract class
+public:
+	virtual void rotate (int) = 0;		// pure virtual function
+	virtual void draw() = 0;
+	virtual bool is_closed() = 0;
+	// ...
+};
+Shape s; // ERR
+
+- Abstract classes (one or more pure virtual) - only as interfaces
+- pure virtual that is not defined in class remains pure virtual - allows to build implementation in stages
+
+class Polygon : public Shape { abstract class
+public:
+	bool is_closed() { return true; } // override Shape::is_closed
+};
+
+class Irregular_polygon : public Polygon {
+	list<Point> lp;
+public:
+	void draw();	// override
+	void rotate(int);
+	//...
+};
+
+- provide an interface without exposing any implementation details (+virtual destructor)
+
+
+
+
+12.4 Design of Class Hierarchies
+
+pb: provide a way for  a program to get an integer value from a user interface
+
+ - ideea is to have a class lval_box that knows input values/range
+	- program can ask lval_box for its value and ask it to prompt the user if necessary
+	- program can ask an lval_box if a user changed the value since the program last looked at it.
+
+general approach:
+- build a "virtual user-interface system"
+
+
+
+12.4.1 A traditional Class Hierarchy (page 315)
+
+1st solution - trad class hierarchy (Simula, Smalltalk, old C++)
+
+class lval_box {
+protected:
+		int val;
+		int low, high;
+		bool changed; // changed by user using set_value()
+public:
+		lval_box(int ll, int hh)  {  changed = false; val = low = ll; high = hh; }
+		
+		virtual int get_value() { changed = false; return val; }				// for application
+		virtual void set_value( int i )  { changed = true; val = i; }		// for user
+		virtual void reset_value(int i) { changed = false; val = i; }	// for application
+		virtual void prompt() {}
+		virtual bool was_changed() const { return changed; }
+};
+
+if we need graphical interface in derived tree 
+class lval_box : public BBwindow { ... }
+class lval_box : public CWwindow { ... }
+class lval_box : public IWwindow { ... }
+
+hierarchy:
+class lval_box : public BBwindow { ... } / rewritten to use BBwindow
+class lval_slider : public lval_box {... }
+class lval_dial : public lval_box { ... }
+class Flashing_ival_slider : public lval_slider { ... }
+class Popup_ival_slider : public lval_slider { ... }
+
+problems:
+
+- The user-interface system should be an implementation detail that is hidden from users who don't want to know about it.
+- The lval_box class should contain no data
+- No recompilation of code using the lval_box family of clases should be required after a change of the user-interface system
+- lval_boxes for different interface systems should be able to coexist in our program
+
+
+12.4.2 Abstract Classes
+
+class lval_box {
+public:
+	virtual int get_value() = 0;
+	virtual void set_value (int i) = 0;
+	virtual void reset_value (int i) = 0;
+	virtual void prompt() = 0;
+	virtual bool was_changed() const = 0;
+	virtual ~lval_box() {}
+};
+
+class lval_slider : public lval_box, protected BBwindow {
+
+public:
+	lval_slider (int, int);
+	~lval_slider();
+	
+	int get_value();
+	void set_value(int i);
+	// ...
+	
+protected:
+	// fct overriding BBwindow virtual fct: draw, mouse, etc
+
+private:
+	// data needed for slider
+};
+
+void f(lval_box* p)
+{
+	//...
+	delete p;		// destructor virtual - any obj pointed by p
+}
+
+hierarchy:
+class lval_box { ... } 
+class lval_slider : public lval_box, protected BBwindow {... }
+class lval_dial : public lval_box, protected BBwindow { ... }
+class Flashing_ival_slider : public lval_slider { ... }
+class Popup_ival_slider : public lval_slider { ... }
+
+still fails to solve the version control problem: 
+class lval_box { ... }  // common
+class lval_slider : public lval_box, protected BBwindow {... } // for BB
+class lval_dial : public lval_box, protected CWwindow { ... } // for CW
+
+- and no way to coexist lval_slider for BB with lval_slider for CWwindow
+
+
+12.4.3 Alternative implementation
+
+class lval_box { ... }  // common
+class BB_ival_slider : public lval_box, protected BBwindow {... } 
+class CW_ival_dial : public lval_box, protected CWwindow { ... } 
+next:
+class lval_box { ... }  // common
+class lval_slider : public lval_box { ... }
+class BB_ival_slider : public lval_slider, protected BBwindow {... } 
+class CW_ival_dial : public lval_slider, protected CWwindow { ... } 
+or better:
+class BB_ival_slider : public lval_slider, protected BBslider {... } 
+class CW_ival_slider : public lval_slider, protected CWslider { ... }
+where BBslider derived from BBwindow ...
+
+
+our hierarchy:
+-1 our original app-oriented conceptual hierarchy of interfaces expressed as derived classes:
+class lval_box { ... }
+class lval_slider : public lval_box { ... }
+class lval_dial : public lval_box { ... }
+class Flashing_ival_slider : public lval_slider { ... }
+class Popup_ival_slider : public lval_slider { ... }
+-2 followed by: implem of this hierarchy for various graphical user-interface system, expressd as derived classes
+class BB_ival_slider : public lval_slider, protected BBslider {... } 
+class BB_flashing_ival_slider: public Flashing_ival_slider, protected BBwindow_with_bells_and_wistles { ... }
+class BB_popup_ival_slider : public Popup_ival_slider, protected BBslider { ... }
+class CW_ival_slider : public lval_slider, protected CWslider { ... }
+
+
+12.4.4 Localizing Object Creation
+- introduce an indirection - as usual - simple - abstract class to represent the set of creation operations
+
+class lval_maker {
+public:
+	virtual lval_dial* dial(int, int) = 0;																// make dial
+	virtual Popup_ival_slider* popup_slider(int, int) = 0;	// mak epopup slider
+}; // factory with -virtual constructors-
+- for each interface from the lval_box family of classes that a user should know about, class lval_maker provides a function that makes an object
+
+class BB_maker : public lval_maker {		// make BB versions
+public:
+	lval_dial* dial(int, int);
+	Popup_ival_slider* popup_slider(int, int);
+	// ...
+};
+
+class LS_maker : public lval_maker {		// make LS versions
+public:
+	lval_dial* dial(int, int);
+	Popup_ival_slider* popup_slider(int, int);
+	// ...
+};
+- each function creates an object of the desired interface and implementation type
+lval_dial* BB_maker::dial(int a, int b)
+{
+		return new BB_ival_dial(a, b);
+}
+lval_dial* LS_maker::dial(int a, int b)
+{
+	return new LS_ival_dial(a,b);
+};
+-user can now create objects without having to know exactly which user-interface system is used.
+void user(lval_maker* pim)
+{
+	lval_box* pb = pim -> dial(0, 99);		// create appropriate dial
+	// ...
+}
+
+BB_maker BB_impl;	// for BB users
+LS_maker LS_impl;	// for LS users
+
+void driver()
+{
+	user(&BB_impl);		// use BB
+	user(&LS_impl);		// use LS
+}
+
+Hierarchy = interfaces + building blocks; 
+
+12.6 Advice
+
+- avoid type fields
+- use pointers and references to avoid slicing
+- use abstract classes to focus design on the provision of clean interfaces
+- use abstract classes to minimize interfaces
+- use abstract classes to keep implementation details out of interfaces
+- use virtual functions to allow new implementations to be added without affecting user code
+- use abstract classes to minimize recompilation of user code
+- use abstract classes to allow alternative implementations to coexist
+- a class with a virtual function should have a virtual destructor
+- an abstract class typically doesn't need a constructor
+- keep the representations of distinct concepts distinct
+
+
+
+13 Templates
+
+- debug a class before turning on a template
+Members of a template class are themselves templates parametrized by the parameters of their template class. If defined outside its class -> template
+
+template<class C> struct String<C>::Srep {
+	C*	s;			// pointer to elements
+	int	sz;		// number of elem
+	int n;			// reference count
+	//...
+};
+
+template <class C> C String<C>::read(int i) const { return rep->s[i]; }
+
+template<class C> String<C>::String()  // template<class C> String<C>::String<C>()
+{
+	rep = new Srep (0, C() );
+}
+- overloading for functions
+- specialization = alternative implementation for a template
+- if a class template is declared in a scope, no other entity can be declared with the same name
+
+
+13.2.3Template parameters
+
+template<class T, T def_val> class Cont { ... } // T def_val , ex int max ... constant - avoid free store use
+ - argument = constant expression, address of an object or function with external linkage, or a non-overloaded pointer to member 
+		- a pointer as &of - object or fct, or f - fct; pointer to memeber as &X::of.  
+		- string literal not accepted as args
+
+template <classT, int max> class Buffer {
+	T v[max];
+public:
+	Buffer() { }
+	//...
+};
+Buffer<char, 128> cbuff;
+Buffer<Record, 8> rbuff;
+
+
+13.2.5 Type checking
+
+template<class T> class List {
+	struct Link {
+		Link*	pre;
+		Link*	suc;
+		T				val;
+		Link(Link* p, Link* s, const T& v) : pre(p), suc(s), val(v) { }
+	};
+	Link* head;
+public:
+	List() : head(7) { } // error - pointer initialization with int
+	List(const T& t) : head(new Link(0, 0, t) ) {}
+	//...
+	void print_all() const { for (Link* p = head; p; p = p->suc) cout << p->val << endl; }
+};
+
+- ! Errors related to the use of template parameters are detected later when template is used
+class Rec { ... }
+void f(const List<int>& li, const List<Rec>& lr)
+{
+	li.print_all();
+	lr.print_all();  // ERR if Rec does not have << operator
+}
+- first poit of use -  - (first) point of instantiation-
+- if at this point we have had only the declaration and not the definition in the same translation unit, the error is deffered to type checking 
+
+
+13.3 Function Templates
+
+template <class T> void sort(vector<T>& ); //declaration
+void f(vector<int>& vi, vector<string>& vs)
+{
+	sort(vi);
+	sort(vs);
+}
+
+template <class T> void sort(vector<T>& v)  // shell sort knuth
+{
+	const size_t n = v.size();
+	
+	for(int gap=n/2; 0<gap; gap/=2)
+		for(int i=gap; i<n; i++)
+			for(int j=i-gap; 0<=j; j-=gap)
+				if(v[j+gap]<v[j])
+					swap(v[j], v[j+gap]) 
+					else
+					break;
+}
+
+
+13.4 Function Template Arguments
+
+- parameters are never deduced
+
+template<class T, int max> T& lookup(Buffer<T, max>& b, const char* p);
+
+class Record {
+	const char v[12];
+	//...
+};
+Record& f(Buffer<Record, 128>& buf, const char* p)
+{
+	return lookup(buf, p);
+}
+	
+-If a template argument cannot be deduced from the template function arguments, we must specify it explicitly
+
+template<class T> class vector { ... };
+template<class T> T* create(); // make a T and return a pointer to it
+
+void f()
+{
+	vector<int> v;									// class, template argument 'int'
+	int* p = create<int>();		// function, template argument 'int'
+}
+
+- explicit specification - provide a return typefor a template function:
+
+template<class T, class U> T implicit_cast(U u) { return u; }
+
+void g(int i)
+{
+	implicit_cast(i); 													// error: can't deduce T - gcc error: no matching function for call to 'implicit_cast(int&)'
+	implicit_cast<double>(i);						// T is double; U is int
+	implicit_cast<char, double>(i);	// T is char, U  is double
+	implicit_cast<char*, int>(i);				// T is char*, U is int; ERR - cannot convert int to char*
+}
+
+- as with default function arguments only trailing arguments can be left out of a list of explicit template arguments.
+- Explicit specification of template arguments allows the definition of families of conversion functions and object creation functions.
+
+
+
+13.3.2 Function Template Overloading
+
+template<class T> T sqrt(T);
+template<class T> complex<T> sqrt(complex<T>);
+double sqrt(double);
+
+void f(complex<double> z)
+{
+	sqrt(2);					// sqrt<int>(int)
+	sqrt(2.0);				// sqrt(double)
+	sqrt(z);					// sqrt<double>(complex<double>)
+}
+
+- For each template find the specialization that is best for the set of function arguments. 
+- Then apply the usual function overload resolution rules to these specializations and all ordinar functions.
+	- if a template function argument has been determined by template argument deduction, that argument cannot have promotions, standard conversions, or use-defined conversions applied
+- if a function and a specialization are equally good matches, the function is preferred. sqrt(double) preferred over sqrt<double>(double) for sqrt(2.0)
+
+template<class T> T max(T,T);
+
+const int s = 7;
+
+void k()
+{
+	max(1,2);					//	max<int>(1,2)
+	max('a','b');			//	max<char>('a', 'b')
+	max(2.7, 4.9);	//	max<double>(2.7, 4.9)
+	max(s,7);					//	max<int>(int(s), 7)  - conversion used
+	
+	max('a', 1);			//	ERR: ambiguous - no std conversion
+	max(2.7, 4);			//	ERR: ambiguous - no std conversion
+}
+
+Resolve errors: 
+
+1. explicit qualification
+void f()
+{
+	max<int>('a', 1);					// max<int>(int('a'), 1)
+	max<double>(2.7, 4);	// max>double>(2.7, double(4))
+}
+
+2. adding suitable declarations
+inline int max(int i, intj) { return max<int>(i,j); }
+inline double max(int i, double d) { return max<double>(i,d); }
+inline double max(double d, int i) { return max<double>(d,i); }
+inline double max(double d1, double d2) { return max<double>(d1,d2); }
+
+void g()
+{
+	max('a', 1)		// max(int('a'),1)
+	max(2.7, 4)	// max(2.7, 4)
+}
+
+
+template<class T> class B { ... };
+template<class T> class D : public B<T> { ... }
+
+template<class T> void f(B<T>*);
+
+void g(B<int>* pb, D<int>* pd)
+{
+	f(pb);		// f<int>(pb)
+	f(pd);		// f<int>(static_cast<B<int>*>(pd)); - standard conversion D<int>* to B<int>* used
+}
+
+
+
+template<class T, class C> T get_nth(C& p, int n);		// get n-th element - C has to be deduced from an actual argument of get_nth() in a call - conversions are not applicable 
+ ... for the second arg - all conversions
+
+class Index {
+public:
+	operator int();
+	//...
+};
+
+void f(vector<int>& v, short s, Index i)
+{
+	int i1 = get_nth<int>(v,2);		// exact match
+	int i1 = get_nth<int>(v,2);		// standard conversion: short -> int
+	int i1 = get_nth<int>(v,2);		// user defined conversion: Index -> int
+}
+
+
+
+13.4 Using Template Arguments to Specify Policy
+
+-sorting Strings: the string, the element type, criteria used
+	- criteria - neither in container, nor in element type
+	- sorting be expressed in general terms
+		- for a specific type, for specific use
+		
+template<class T, class C>
+int compare(const String<T>& str1, const String<T>& str1)
+{
+	for (int i=0; i<str1.length() && i<str2.length(); i++)
+		if( !C::eq(str1[i], str2[i])) return C::lt(str1[i], str2[i]) ? -1 : 1;
+	return str1.length() - str2.length();
+}
+- define C::eq, C::lt
+
+template<class T> class Cmp {  // normal default compare
+public:
+	static int eq(T a, T b) 		{ return a==b;}
+	static int lt(T a, T b) 			{ return a<b; }
+};
+
+class Literate { // special names compare according to literary conventions
+public:
+	static int eq( char a, char b) { return a==b; }
+	static int lt(char, char); // a table lookup based on character value $13.9[14]
+};
+
+- can choose the rules for comparison by explicit specification of the template arguments
+
+void f(String<char> swede1, String<char> swede2)
+{
+	compare<char, Cmp<char>>(swede1, swede2);
+	compare<char, Literate>(swede1, swede2);
+}
+
+
+
+13.4.1 Default Template Parameters
+
+- implemented through overloading
+
+template<class T, class C>
+int compare(const String<T>& str1, const String<T>& str1) 
+
+template<class T>
+int compare(const String<T>& str1, const String<T>& str1)
+
+Alternative:
+
+template<class T, class C = Cmp<T> >
+int compare(const String<T>& str1, const String<T>& str1)
+{
+	for (int i=0; i<str1.length() && i<str2.length(); i++)
+		if( !C::eq(str1[i], str2[i])) return C::lt(str1[i], str2[i]) ? -1 : 1;
+	return str1.length() - str2.length();
+}
+
+class No_case { ... } // for non sensitive cases
+
+void f(String<char> swede1, String<char> swede2)
+{
+	compare(swede1, swede2); 														// use Cmp<char>
+	compare<char,Literate>(swede1, swede2);		// use Literate
+	compare<char,No_case>(swede1, swede2);	// not sensitive to case
+}
+
+- template parameters used to express policies are often called 'traits'
+
+
+
+
+13.5	Specialisation
+
+template<class T> class Vector { 			// general vector type
+	T*	v;
+	int sz;
+public:
+	Vector();
+	explicit Vector(int);
+	
+	T&	elem(int i) { return v[i]; }
+	T&	operator[] (int i);
+	
+	void swap(Vector& );
+	// ...
+};
+
+Vector<int> vi;
+Vector<Shape*> vps;
+Vector<string> vs;
+Vector<char*> vpc;
+Vector<Node*> vpn;
+
+- most will be Vectors of some pointer type; Containers of pointers could share a single implementation. 
+- default C++ replicates code for template functions - leads to code bloat
+
+template<> class Vector<void*> { // template<> = this is a specialization that could be used without a template parameter
+	void**	p;
+	//...
+	void*& operator[]  (inti);
+};
+
+Vector<void*> vpv;
+
+- a specialization for every Vector of pointers and ONLY for Vector of pointers - partial specialization -
+
+template<class T> class Vector<T *> : private Vector<void*> { // specialization pattern <T*> = every pointer type
+public:
+	typedef Vector<void*> Base;
+	
+	Vector() {}
+	explicit Vector(int i) : Base(i) {}
+	
+	T*& elem(int i) { return reinterpret_cast<T*&> (Base::elem(i)); }
+	T*& operator[] (int i) { return reinterpret_cast<T*&> (Base::operator[] (i)); }
+	//...
+};
+
+Vector<Shape*> vps;	// <T*> is <Shape*> so T is Shape
+Vector<int**> vppi;			// <T*> is <int**> 		so T is int*
+
+- partial specialization of Vector = shared implementation for all Vectors of pointers
+	- Vector<T*> - interface to Vector<void*>  - implemented exclusively through derivation and inline expansion
+- lists of pointers - minimize code bloat - maximize the share code
+- the general template must be declared before any specialization 
+
+template class<T> class List<T*> { /* ... */ };
+template class<T> class List { /* ... */ };					// error: general template after specialization 
+
+- critical information  - set of template parameters
+
+template class<T> class List;
+template class<T> class List<T*> { /* ... */ };
+
+- if used, the general template must be defined
+- the specialization must be in scope for every use
+
+template<class T> class List { ... };
+List<int*> li;
+template<class T> class List<T*> { ... }; // ERR: List was specialized for int* after List<int*> had beed used
+
+All specializations must be declared in the same namespace as the template itself.
+- explicitly specializing a template implies that no definition is generated for that specialization.
+	- must be explicitly defined if used (not only declared)
+
+
+
+13.5.1 Order of Specializations
+
+- One specialization is more specialized than another if every argument list that matches its specialization pattern also matches the other.
+
+template<class T> class Vector;									// general
+template<class T> class Vector<T*>;					// specialized for any pointer
+template<> class Vector<void*>;								// specialized for void*
+
+
+13.5.2	Template Function Specialization
+
+// Shell sort 
+
+template<class T> bool less(T a, T b) { return a<b; }
+
+template<class T> void sort(Vector<T>& v)
+{
+	const size_t n=v.size();
+	
+	for(int gap=n/2; 0<gap; gap/=2)
+		for(int i=gap; i<n; i++)
+			for(int j=i-gap; 0<=j; j-=gap)
+				if(less(v[j+gap], v[j]))
+					swap(v[j], v[j+gap]);
+				else
+					break;
+}
+
+- allows improvements to its implementation.
+- as written have problems with Vector<char*> - because compare char*
+
+-specialization for less to correct that:
+
+template<> bool less<const char*>(const char* a, const char* b)
+{
+	return strcmp(a,b)<0;
+}
+
+- as for the classes : 'template<>' = specialization that can be specialized without a template parameter.
+- <const char *> : used in cases where the template argument is  'const char*'
+	- can be deduced -> simplification:
+
+template<> bool less<> (const char* a, const char* b)
+{
+	return strcmp(a,b)<0;
+}
+
+- given 'template<>' prefix, the second empty '<>' is redundant:
+
+template<> bool less (const char* a, const char* b)
+{
+	return strcmp(a,b)<0;
+}
+
+
+- in many cases overloading provides an alternative to specialization 
+
+template<class T> void swap(T& x, T& y)
+{
+	T t = x; 
+	x = y;
+	y = x;
+}
+
+- this inefficient for Vectors because swaps by copy. Vector obj  holds data to give indirect access to the elements. Efficient=swap representations
+
+provide Vector's member swap:
+
+template<class T> void Vector<T>::swap(Vector & a)	// swap representation 
+{
+	swap(v, a.v);
+	swap(sz, a.sz);
+}
+
+and the general swap:
+
+template<class T> void swap(Vector<T>& a, Vector<T>&b)
+{
+	a.swap(b);
+}
+	
+! -  specialization for less, overloading for swap  - !
+
+- Specialization + overloading - more efficient alternative to a general algorithm for a set of template args  ( here: swap() )
+- Specialization - irregularity of an argument type causes the general algorithm to give an undesired result  ( here: less() ) 
+		- 'irregular types' = often built-in pointer and array types
+		
+
+
+13.6 Derivation and Templates
+
+- deriving template from non template  - common implementation for a set of templates.
+	- a template is used to provide an elegant and type-safe interface to an otherwise unsafe and inconvenient-to-use facility
+	
+template<class T> class Vector<T*> : private Vector<void*> { /* ... */ };
+
+
+- derive one template from another
+	- if members of a base class depend on a template parameter of a derived class - the base itself must be parametrized
+
+template<class T> class vector { ... };
+template<class T> class Vec : public vector<T> { ... };
+
+(the overload resolution rules for template functions applies)
+
+
+-passing the derived type itself to the base class:
+
+template<class C> class Basic_ops { // basic operators on containers
+public:
+	bool operator==(const C&) const;		// compare all elements
+	bool operator!=(const C&)const;
+	//...
+	// give access to C's operations:
+	const C& derived() const { return static_cast<const C&> (*this); }
+};
+
+template<class T> class Math_container : public Basic_ops< Math_container<T> > {
+public:
+	size_t size() const;
+	T& operator[](size_t);
+	const T& operator[](size_t) const;
+	// ...
+};
+
+- basic operations on containers 
+		- be separate from the def of the containers themselves
+		- defined only once.
+	- operations (==, !=) must be expressed in terms of both the container and its elements
+			- element type needs to be passed to the container template - the resulting container is then passed to Basic_ops
+
+- assuming that Math_container is similar to vector
+
+template <class C> bool Basic_ops<C>::operator== (const C& a) const
+{
+	if (derived().size() != a.size() ) return false;
+	for (int i=0; i<derived().size(); ++i)
+		if (derived() [i] != a[i] ) return false;
+	return true;
+}
+
+---- Alternative to keeping containers and operations separate - combine them from template arguments rather than use derivation
+
+template<class T, class C> class Mcontainer {
+	C elements;
+public:
+	T& operator[] (size_t i) { return elements[i]; }
+	
+	friend bool operator==<>(const Mcontainer&, const Mcontainer&); // compare elements
+	friend bool operator!=<>(const Mcontainer&, const Mcontainer&); 
+	// ...
+};
+
+template<class T> class My_array { /* ... */ }
+
+Mcontainer< double, My_array<double> > mc;
+
+- friends -used to achieve the conventional symmetric argument style for == and !=
+- one might also consider passing a template rather than a container as the C argument in such cases.
+
+
+
+13.6.1 Parameterization and Inheritance
+
+- A template parameterizes the definition of a type or a function with another type
+- flexibility is needed - specialization 
+- Abstract class = interface
+	- much code for different implementations of the abstract class can be shared in class hierarchies
+	- most code using the abstract class doesn't depend on its implementation 
+
+-Since both allow an algorithm to be expressed once and applied to a variety of types - polymorphic -
+	- to distinguish them 
+			- virtual function = run-time polymorphism
+			- template offers = compile-time polymorphism OR parametric polymorphism
+
+? cand ?
+	- No hierarchical relationship -> used as template arguments
+	- Actual type cannot be known at compile time - derived from abstract
+	- run-time efficiency - inlining of operation is essential -> templates
+
+
+
+13.6.2 Member Templates
+
+- A class or a class template can have members that are themselves templates
+
+template<class Scalar> class complex { 			// see 22.5 for details
+	Scalar re, im;
+public:
+	template<class T> complex(const complex<T>& c) : re(c.real()), im(c.imag()) {}
+	//...
+};
+
+complex<float>	cf(0,0);
+complex<double> cd = cf;		// ok, uses float to double conversion
+
+class Quad {
+	// no conversion to int
+};
+
+complex<Quad> cq;
+complex<int> ci = cq; 		// ERR: no Quad to int conversion 
+
+- can construct a - complex<T1> from complex<T2> - if you can initialize a T1 by a T2
+
+- !! C++ accepts some unresonable conversions for built-in types (double to int)
+		- catch truncation problems
+				- implicit_cast (13.3.1)
+				- checked_cast (6.2.6)
+
+template<class Scalar> class complex { 			// see 22.5 for details
+	Scalar re, im;
+public:
+	complex() : re(0), im(0) {}
+	complex(const complex<Scalar>& c) : re(c.real()), im(c.imag()) {}
+	
+	template<class T2> complex(const complex<T2>& c) 
+			: re(checked_cast<Scalar>(c.real())), im(checked_cast<Scalar>(c.imag())) {}
+	//...
+};
+
+- add default and copy ctor
+- a template ctor is never used to generate a copy constructor  (a default will be generated - identical with the declared)
+	- copy assignement must be defined as non-template operator
+	
+- A member template cannot be virtual
+
+class Shape {
+	// ...
+	template<class T> virtual bool intersect(const T&) const =0;	// error: virtual template 
+};
+
+
+
+13.6.3	Inheritance Relationships
+
+- a class template = a type generator
+
+class Shape {}
+class Circle : public Shape {}
+set<Circle*> not set<Shape*>
+- No default relationship between classes generated from the same template 
+
+
+13.6.3.1	Template Conversions
+
+- need to pass the anterior issue - need a relationship - when we define a pointer template, we would like to reflect inheritance relationships among with the objects pointed to.
+
+template<class T> class Ptr {		// pointer to T
+	T* p;
+public:
+	Ptr(T*);
+	Ptr(const Ptr&);																						// copy constructor
+	template<class T2> operator Ptr<T2> ();		// convert Ptr<T> to Ptr<T2>
+	// ...
+};
+
+void f(Ptr<Circle> pc)
+{
+	Ptr<Shape> ps = pc;		// should work
+	Ptr<Circle>  pc2= ps;		// should give error
+}
+
+- Allow the first init only if Shape is (in)direct base of Circle - define conversion operator - T* assigned to T2*.
+
+template<class T>
+	template<class T2>
+			Ptr<T>::operator Ptr<T2> () { return Ptr<T2>(p); }  // p <-> T* can be arg to Ptr<T2>(T2*) constructor
+
+- if T* can be converted, the Ptr<T> to Ptr<T2> conversion will work at compile time 
+
+void f(Ptr<Circle> pc)
+{
+	Ptr<Shape> ps = pc;					// ok: can convert Circle* to Shape*
+	Ptr<Circle>  pc2= ps;					// error: cannot convert Shape* to Circle*
+}
+
+-! template parameter list of a template and its template member cannot be combined
+template<class T, class T2>		// error 
+	Ptr<T>:: operator Ptr<T2> () { return Ptr<T2> (p); }
+
+
+
+13.7 Source Organization
+
+Tho ways:	
+	- 1° Include template def before their use in a translation unit
+	- 2° Include template declarations (only) before their use in a translation unit, and compile their definitions separately
+
+1°
+//out.c:
+	#include<iostream>
+
+	template<class T> void  out(const T& t) { std::cerr << t; }
+
+//user1.c:
+	#include "out.c"
+	// use out()
+	
+//user2.c:
+	#include "out.c"
+	// use out()
+	
+- def out() and all declarations it depends on are #included in several compilation units
+- treats template functions - like inlide functions
+
+PB:
+	- all dependencies of 'out()' are added to each file using out() - increase compiler work
+	- user come to depend on declarations - only for out()'s use
+		- minimized by:
+				- using namespaces, avoiding macros, reduce the info included
+
+2°
+- the logical way - if the template definition is not included in the user code, none of its dependencies can affect that code.
+
+// out.h
+	template<class T> void out(const T& t);
+
+// out.c
+	#include<iostream>
+	#include<out.h>
+	
+	export template<class T> void out(const T& t) { std::cerr<<t; }			// see 9.2.3 - or to definition or to declaration 
+
+//user1.c:
+	#include "out.h"
+	// use out()
+	
+//user2.c:
+	#include "out.h"
+	// use out()
+
+- like non-inline fct
+- instead of filtering out redundant copies of a template definition, the implementation must find the unique definition when needed
+
+Linker bun (instantiation)?
+ - 1° mareste viteza compilarii si claritatea erorilor
+ - 1° - sensibil la template, declaration, defines, macros, etc
+ 
+- best 2° if possible
+-! non-inline static members(13.1) must have unique definition in some compilation unit  - best not used for templates that are included in many translation units.
+
+-ideal code - the same as single unit or separated
+	- restrictiong 	 template defs dependency on its environment rather than by trying to carry as much as possible of its definition context with it into the instantiation process.
+	
+	
+
+
+13.8 Advice
+
+- Use templates to express algorithms that apply to many argument types 13.3
+- Use templates to express containers 13.2
+- Provide specializations for containers of pointers to minimize code size 13.5
+- Always declare the general form of a template before specializations 13.5
+- Declare a specialization before its use 13.5
+- Minimize a template definition's dependence on its instantiation contexts 13.2.5, 13.8
+- Define every specialization you declare 13.5
+- Consider if a template needs specializations for C-style strings and arrays 13.5.2
+- Parameterize with a policy object 13.4
+- Use specialization and overloading to provide a single interface to implementations of the same concept for different types 13.5
+- Provide a simple interface for simple cases and use overloading and default arguments to express less common cases 13.5, 13.4
+- Debug concrete examples before generalizing to a template 13.2.1
+- Remember to -export- etmplate definitions that need to be accessible from other translation units 13.7
+- Separately compile large templates and templates with nontrivial context dependencies 13.7
+- Use templates to express conversions but define those conversions very carefully 13.6.3.1
+- Where necessary, constrain template arguments using a constraint() member function 13.9[16], 13.10
+- Use explicit instantiation to minimize compile time and link time 13.10
+- Prefer a template over derived classes when run-time efficiency is at a premium 13.6.1
+- Prefer derived classes over a template if adding new variants without recompilation is important 13.6.1
+- Prefer a template over derived classes when no common base can be defined 13.6.1
+- Prefer a template over derived classes when built-in types and structures with compatibility constraints are important 13.6.1
+
+
+
+
+14. Exception Handling
+
+
+14.1 Error Handling
+
+library
+	- autor = errors - how process?
+	- user = process - how detect?
+	- errors handled in user code - not let library to find 
+
+Exceptions:
+	- function that finds a pb - throws - an exception -> caller could handle the pb
+	- want to handle that kind of pb, indicate is willing to catch
+
+Upon detecting a problem that cannot be handled locally, a function could:
+	- terminate the program
+	- return a value representing "error"  - rare
+	- return a legal value and leave the program in an illegal state - globals doesn't work well in presence of concurency
+	- call a function supplied to be called in case of "error" - exception handling is not meant for this case
+	
+Exception handling mechanism provides an alternative when thrad techniques are insufficient, inelegant and error-prone.
+	- provides a way to separate error handling code from ordinary code
+	
+	
+14.1.1	Alternative Views on Exceptions
+
+- support handling of errors and other exceptional conditions
+- support error handling in programs composed of independently developed components
+- the mechanism is designed for SYNCHRONOUS exceptions - array range checks and I/O errors.
+	- Asynchronuous events - keyboard, certains arithmetic - are not necessary exceptional and are not handled directly by this mechanism (signals to deal with async)
+- can be seen as alternative return mechanism
+
+
+14.2 Grouping of Exceptions
+
+Exception = object of some class representing an exceptional occurence.
+Code that detects an error throws an object.
+desire to handle an exception - catch clause
+ - throw unwind stack until a suitable catch is found
+
+exceptions fall naturally into families
+class Matherr{};
+class Overflow : public Matherr {};
+class Underflow : public Matherr {};
+class Zerodivide : public Matherr {};
+
+
+try {
+
+}
+catch (Overflow) {
+	// handle Overflow or derived from...
+	}
+catch (Matherr) {
+	// handle any Matherr that is not Overflow
+}
+
+
+14.2.1 Derived Exceptions
+
+class Matherr {
+///
+virtual void debug_print() const { cerr << "Math error"; }
+};
+
+class Int_overflow: public Matherr {
+	const char* op;
+	int a1, a2;
+public:
+	Int_overflow(const char* p, int a, int b) { op=p; a1= a; a2=b; }
+	virtual void debug_print() const { cerr << op << ' (' << a1 << ' , ' << a2 << ' ) '; }
+	///
+};
+
+try {
+} 
+catch (Matherr m) { ... will catch ok only Matherr
+}
+
+int add(int x, int y)
+{
+	if( (x>0 && y > 0 && x>INT_MAX-y) || (x<0 && y<0 && x<INT_MIN-y) )
+		throw Int_overflow("+", x, y);
+		
+	return x+y; 	// x+y will not overflow
+}
+
+void f()
+{
+	try {
+		int i1 = add(1,2);
+		int i2 = add(INT_MAX, -2);
+		int i3 = add(INT_MAX, 2);	// here
+	}
+		catch(Matherr& m) {
+		//
+			m.debug_print();
+	}
+}
+
+
+14.2.2 Composite Exceptions
+
+class Netfile_err : public Network_err, public File_system_err { /// }
+
+
+
+14.3 Catching Exceptions
+
+try {
+	throw E();
+	}
+	catch(H) {
+		// CAND?
+		}
+The handler is invoked :
+1. if H is the same type as E.
+2. if H is an unambiguous public base of E.
+3. if H and E are pointer types and [1] or [2] holds for the types to which they refer.
+4. if H is a reference and [1] or [2] holds for the type to which H refers.
+
+
+14.3.1 Re-Throw 2 Catch Every Exception
+
+catch(...) {
+ /// cleanup
+	throw;
+}
+
+- if a re-throw is attempted when there is no exception to re-throw, terminate() will be called.
+
+
+14.3.2.1 Order of Handlers
+
+try {
+	//...
+}
+catch (std::ios_base::failure) {
+	// stream io error
+}
+//catch (std::bad_cast)
+catch (std::exception&  e) {
+	// any STD lib
+}
+catch (...) {
+	// any other
+}
+
+
+14.4 Resource Management
+
+function acquires a resource - open file, allocates some memory from the free store, sets an access control lock, etc.
+	- proper release
+
+void use_file(const char* fn)
+{
+	FILE* f = fopen(fn, "r");
+	try {
+		// use f
+	}
+	catch ( ... ) {
+		fclose(f);
+		throw;
+	}
+	fclose(f);
+}
+	- this solution is verbose, tedious, and potentially expensive
+
+
+Problem:
+void acquire()
+{
+	// acquire resource 1
+	// ...
+	// acquire resource n
+	
+	// use resources
+	
+	// release resource n
+	// ...
+	// release resource 1
+}
+
+- acquire / release  - objects - constructors / destructors => File_ptr acting like FILE*
+
+class File_ptr {
+	FILE* p;
+public:
+	File_ptr(const char* n, const char * a) { p = fopen(n, a); }
+	File_ptr(FILE* pp) { p = pp; }
+	// suitable copy operations
+	~File_ptr() { if (p) fclose(p); }
+	
+	operator FILE* () { return p;}
+};
+
+void use_file(const char* fn)
+{
+	File_ptr f(fn, "r");
+	// use f
+}
+
+
+14.4.1 Using Constructors And Destructors
+
+- managing resources using local objects
+		- resource acquisition is initialisation
+	- general technique - relies on properties of constructors and destructors and their interaction with exception handling
+
+class X {
+		File_ptr aa;
+		Lock_ptr bb;
+public:
+	X(const char* x, const char* y)
+		: aa (x, "rw"), // acquire 'x'
+			bb(y)						// acquire 'y'
+	{}
+	//...
+};
+ - protected - splitted resources - independentl
+ 
+memory resources problems:
+
+class Y {
+	int* p;
+	void init();
+public:
+	Y(int s) { p=new int[s]; init(); }
+	~Y() { delete[] p; }
+	// ...
+};
+
+- conduct to memory leaks; if exception in init, object is not constructed and destructor is not called
+A safe variant:
+
+class Z {
+	vector<int> p;
+	void init();
+public:
+	Z(int s)	:	p(s) { init(); }  // p is managed by vector container
+	//...
+};
+
+
+14.4.2 Auto_ptr
+
+std provides the template auto_ptr - supports "resource acquisition is initialization"
+-! it is not a general smart pointer !
+	- provides exception safety for automatic pointers
+
+void f(Point p1, Point p2, auto_ptr<Circle> pc, Shape* pb) // remember to delete pb on exit
+{
+	auto_ptr<Shape> p(new Rectangle(p1, p2) ); // p points to a rectangle
+	auto_ptr<Shape> pbox(pb);
+	
+	p->rotate(45);	// use auto_ptr<Shape> exactly as a Shape*
+	//
+	if(in_a_mess) throw Mess();
+	//...
+}
+- Rectangle, Shape pointed by pb, Circle pointed to by pc are deleted  whether or not an exception is thrown.
+
+ownership semantics (destructive copy semantics) - auto_ptr have  a different copy semantics
+	- when one auto_ptr is copied into another, the source no longer points to anything (cannot be copied)
+	
+defined in <memory>
+
+template<class Y> struct auto_ptr_ref { /* ... */ }; // helper class
+
+template<class X> class std::auto_ptr {
+	X* ptr;
+public:
+	typedef X element type;
+	// note copy constructors and assignments take non-const arguments;
+	explicit auto_ptr(X* p = 0) throw() { ptr = p; } 						// throw() means "throws nothing"
+	auto_ptr(auto_ptr& a) throw();																			// copy, then a.ptr=0
+	template<class Y>auto_ptr(auto_ptr<Y>& a) throw();	// copy, then a.ptr=0
+	~auto_ptr() throw() { delete ptr; }
+	auto_ptr& operator=(auto_ptr& a) throw();									// copy, then a.ptr=0
+	template<class Y> auto_ptr& operator=(auto_ptr<Y>& a) throw();	// copy, then a.ptr=0
+	template<class Y> auto_ptr& operator=(auto_ptr_ref<Y>& a) throw();	// copy, then a.ptr=0
+
+	X& operator* () const throw() { return *ptr;}
+	X* operator-> () const throw() { return ptr;}
+	X* get() const throw() { return ptr;}														// extract pointer
+	X* release() throw() { X* t = ptr; ptr = 0; return t; }		// relinquish ownership
+	void reset(X* p =0) throw() { if (p!=ptr) { delete ptr; ptr=p; } }
+	auto_ptr(auto_ptr_ref<X>) throw();															// copy from auto_ptr_ref
+	template<class Y> operator auto_ptr_ref<Y>() throw();	// copy to auto_ptr_ref
+	template<class Y> operator auto_ptr<Y>() throw();			// destructive copy from auto_ptr
+};
+
+- purpose of auto_ptr_ref - implements destructive_copy_semantics
+- if a D* can be converted to B*; => auto_ptr<D> -> auto_ptr<B>
+
+void g(Circle* pc)
+{
+	auto_ptr<Circle> p2(pc);		// now p2 is responsible for deletion
+	auto_ptr<Circle>p3(p2);		// now p3 is responsible for deletion (and p2 isn't)
+	p2->m = 7;												// ERR: p2.get() == 0
+	Shape* ps = p3.get();				// extract the pointer from an auto_ptr
+	auto_ptr<Shape> aps(p3);	// transfer of ownership and convert type
+	auto_ptr<Circle> p4(pc);		// ERR: now p4 is also responsible for deletion - 2xauto_ptr owns pc
+}
+
+vector< auto_ptr<Shape> >& v; // dangerous: use of auto_ptr in container
+sort(v.begin(), v.end());		// Don't do this: The sort will probably mess up v
+
+
+14.4.3 Caveat
+- the "resource acquisition is initialization" strategy, together with the use of exceptions to signal failure, is suitable for many libraries.
+
+
+14.4.4 Exceptions and New
+Consider:
+void f (Arena& a, X* buffer)
+{
+	X* p1 = new X;
+	X* p2 = new X[10];
+	
+	X* p3 = new(&buffer[10]) X;		// place X in buffer ( no deallocation needed )
+	X* p4 = new(&buffer[11]) X[10]; 
+	
+	X* p5 = new(a) X;										// allocation from Arena a (deallocate from a)
+	X* p6 = new(a) X[10];
+}
+
+? If X's constructor throws an exception ?
+ - is memory allocated by new freed?
+		- for ordinary cases YES
+				- p1 and p2 freed - don't cause memory leaks
+
+placement syntax: nonstandard allocation => nonstandard release; the action depends on allocator used.
+	- if a Z::operator new() is used, Z::operator delete() is invoked if it exists.
+	- arrays are handled equivalently
+	
+	
+14.4.5 Resource Exhaustion
+2 ways:
+	- resumption - ask caller to fix and carry on	- function calling mechanism
+	- termination - abandon and return - exception mechanism
+
+void* operator new(size_t size)
+{
+	for(;;) {
+		if(void* p = malloc(size)) return p;							// try to find memory 
+		if(_new_handler == 0) throw bad_alloc();	// no handler: give up
+		_new_handler();																					// ask for help 
+	}
+}
+
+void my_new_handler()
+{
+	int no_of_bytes_found = find_some_memory();
+	if(no_of_bytes_found < min_allocation) throw bad_alloc();	// give up
+}
+
+
+void f()
+{
+	void(*oldnh) () = set_new_handler(&my_new_handler);
+	
+	try{
+			// ...
+	}
+	catch(bad_alloc) {
+			// somehow respond to memory exhaustion
+			//...
+			}
+	catch(...) {
+			set_new_handler(oldnh);	// restore handler
+			throw;																// re-throw
+			}
+	
+	set_new_handler(oldnh);			// re-set handler
+}
+
+- organize resource allocation in layers (levels of abstraction)
+	- avoid asking help from the caller layer 
+
+Throwing an exception requires an object to throw.
+A C++ implem is required to have enough memory to throw bad_alloc in case of memory exhaustion.
+	- it is possible that throwing other exception will cause memory exhaustion.
+	
+
+14.4.6 Exceptions in Constructors
+
+Exceptions provide a solution to problem of how to report errors from a constructor
+
+Altrenatives:
+	- return an obj in bad state, and trust the user to test the state
+	- set a nonlocal var (errno) to indicate : creation failed - and trust the user to test that var
+	- don't do any init in constructor, and rely on user to call an initialization befor first use
+	- mark the object "uninitialized" and have the first member function called for the object do real  initialization, and that fct can then report an error if init fails
+
+Exceptions handling allows to pass the error information out the constructor
+
+class Vector {
+public:
+	class Size {};
+	
+	enum { max = 32000 };
+	
+	Vector(int sz)
+	{
+		if(sz<0 || max<sz) throw Size();
+		// ...
+	}
+	
+	// ...
+	
+};
+
+
+Vector* f(int i)
+{
+	try{
+		Vector* p = new Vector(i);
+		//...
+		return p;
+	}
+	catch(Vector::Size) {
+		// deal with size error
+	}
+}
+
+
+14.4.6.1 Exeptions and Member Initialization
+
+class X {
+	Vector v;
+	// ...
+public:
+	X(int);
+	// ...
+};
+
+X::X(int s)
+try 
+			:v(s)		// initialize v by s
+{
+	// ...
+}
+catch (Vector::Size) { // exceptions thrown for v are caught here
+		// ...
+}
+
+
+
+14.4.6.2 Exceptions and Copying
+
+14.4.7 Exceptions in Destructors
+
+Exceptions point of view - destructors are caleld:
+
+- Normal call - normal exit from a scope, a delete, etc.
+- Call during exception handling: During stack unwinding exception-handling mechanism exits a scope containing an object with a destructor.
+
+In the latter case, an exception may not escape from the destructor itself. If it does, it is considered a failure of the exception handling mechanism and std::terminate() is called.
+Exiting from a destructor by throwing an exception is also a violation of the STD.
+
+If a destructor calls fct that may throw, it needs to protect itself.
+X::~X()
+try {
+	f();<// might throw
+}
+catch(...) {
+		//....
+}
+
+<exception> have 'uncaught_exception()' that returns 'true' - if an exception has been thrown and not caught
+ - allows that a destructor test its state - normal calling or as an stack unwinding operation.
+ 
+
+
+14.5 Exceptions That Are Not Errors
+
+- exceptions should be used only if standard system (if..struct) cannot be used - inelegant or impossible
+- exceptions as alternate returns can be an elegant technique for terminating search functions - expecially highly recursive searchfunctions such as a lookup in a tree.
+
+void find( Tree* p, const string& s)
+{
+	if(s==p->str) throw p; // found s
+	if(p->left) find(p->left, s);
+	if(p->right) find(p->right, s);
+}
+
+Tree* find(Tree* p, const strings& s)
+{
+	try {
+		find(p, s);
+		}
+		catch(Tree* q) { // q->str==s
+			return q;
+		}
+		retrun 0;	
+}
+
+
+
+14.6 Exception Specifications
+
+void f(int a) throw (x2, x3); // throws only x2, x3 and exceptions derived from
+
+void f() throw (x2, x3)
+{
+	// stuff
+}
+
+equivalent with:
+
+void f()
+try 
+{
+	// stuff
+}
+catch (x2) { throw; }
+catch (x3) { throw; }
+catch (...) {
+	std::unexpected();	//will not return
+}
+- default meaning of unexpected() is std::terminate() - that calls 'abort()' (see 9.4.1.1)
+
+int g() throw(); // throws no exception
+
+
+14.6.1 Checking exception specification
+
+ If ANY declaration of a function has an exception-specification, every declaration of that function - including the definition - must have an exception-specification with exactly the same set of exception types.
+ 
+int f() throw(std::bad_alloc);
+
+int f() // error: exception-specification missing
+{
+ //...
+}
+
+
+-virtual functions
+class B {
+public:
+		virtual void f();		// can throw anything
+		virtual void g() throw (X, Y);
+		virtual void h() throw(X);
+};
+
+class D : public B {
+public:
+		void f() throw (X); 				// ok
+		void g() throw(X); 				// ok: D::g() is more restrictive than B::g()
+		void h() throw (X, Y); 	// error: D::h() is less restrictive than B::h()
+}
+
+void f() throw (X);
+void (*pf1) () throw(X, Y) = &f; 		//ok
+void (*pf2) () throw () = &f;					// error: f()  is less restrictive than pf2
+
+void g();																			// might throw anything
+void (*pf3) () throw (X) = &g; 		// error: g() less restrictive than pf3
+
+An exception-specification is not part of the type of a function and a typedef may not contain one.
+
+typedef void (*PF) () throw (X);		// error
+
+
+14.6.2 Unexpected Exceptions
+
+An exception-specification can lead to calls to unexpected()
+
+- a well designed subsystem Y will often have all its exceptions derivet from Yerr. Given:
+
+class Some_Yerr : public Yerr ( /* ... */ );
+
+void f() throw (Xerr, Yerr, exception) 	// all exceptions from standard library are derived from class exception
+
+
+14.6.3 Mapping Exceptions
+
+- change policy of terminating a program upon encountering an unexpected exception.
+	- simplest way is to add in exception-specification the std::bad_exception
+
+class X { } ;
+class Y { } ;
+
+void f() throw(X, std::bad_exception)
+{
+	// ...
+	throw Y(); 		// throw "bad" exception - information about which exception caused the problem is lost
+}
+
+
+14.6.3.1 User Mapping of Exceptions
+
+--technique for mapping an unexpected exception into an expected one - more flexible variant of what the system offers  like bad_exception
+
+- g written for a non networked environment
+void g() throw(Yerr);
+
+- call g() in a networked environment - does not know the network exceptions and will invoke unexpected()
+
+the response to an unexpected exception is determined by en _unexpected_handler set by std::set_unexpected() from <exception>
+		typedef void (*unexpected_handler) ();
+		unexpected_handler set_unexpected(unexpected_handler)
+- handle unexpected exception well:
+	- define a class to allow the "resource acquisition is initialisation" technique for unexpected()
+
+class STC { // store and reset class
+	unexpected_handler	old;
+public:
+	STC(unexpected_handler f)  { old = set_unexpected(f); }
+	~STC() { set_unexpected(old); }
+};
+
+- define a function with the meaning we want for unexpected()
+
+class Yunexpected : public Yerr {  };
+void throwY() throw ( Yunexpected ) { throw Yunexpected(); }
+
+used as an unexpected(), throwY() maps any unexpected exception into Yunexpected.
+
+Finally we provide a version of g() to be used in networked environment:
+
+void networked_g() throw(Yerr)
+{
+	STC xx(&throwY); 		// now unexpected() throws Yunexpected
+	g();
+}
+
+- Yunexpected is derived from Yerr - exception-specification is not violated
+- had throwY() thrown an exception that did violate the exception-specification, terminate() would have been called.
+
+By saving and restoring _unexpected_handler - make possible by several subsystems to control handling of unexpected exceptions without interfering with each other.
+
+
+14.6.3.2 Recovering the Type of an Exception 
+
+user doesn't know which exception has been mapped - information lost in throwY
+
+class Yunexpected : public Yerr {
+public:
+	Network_exception* pe;
+	Yunexpected(Network_exception* p) : pe(p?p->clone():0) {}
+	~Yunexpected() { delete pe; }
+};
+
+void throwY() throw (Yunexpected)
+try {
+	throw;	// re-throw to be caught immediately!
+}
+catch(Network_exception& p) {
+	throw Yunexpected(&p);		// throw mapped exception
+}
+catch(...) {
+	throw Yunexpected(0);
+}
+
+- rethrowing an exception and catching it allows to get a handle on any exception of a type we can name
+
+
+
+14.7 Uncaught Exception 
+
+- not caught -> std::terminate()
+- exception-handling finds stack corrupted  -> std::terminate()
+- destructor called during stack unwinding caused by an exception  tries to exit using an exception -> std::terminate()
+
+- unexpected exception  -> _unexpected_handler ( set_unexpected() )
+- uncaught exception     -> _uncaught_handler set by std::set_terminate() from <exception>
+		typedef void( *terminate_handler) ();
+		terminate_handler set_terminate(terminate_handler); 		// return is the previous function given to set_terminate()
+		
+--
+- terrminate could not be used:
+	- to abort a process
+	- to reinitialize the system
+
+- terminate is used when exception handling mechanism has failed
+
+-by default terminate() calls abort()
+-an _uncaught_hanfler is assumed not to return to its caller; if it tries to - terminate() will call abort() - abnormal exit always
+
+-IT is IMPLEMENTATION-DEFINED whether destructors are invoked when a program is terminated because of an uncaught exception
+	- some systems - destructors not called - program resumed from debugger
+	- other systems is impossible not to invoke the destructors while searching for a handler
+
+Want proper cleanup when uncaught exception happens?
+ - add a catch-all handler to main()
+ 
+int main()
+try {
+// ...
+}
+catch (std::range_error)
+{
+	cerr << "range_error: Not again! \n";
+}
+catch (std::bad_alloc)
+{
+	cerr << "new ran out of memory \n";
+}
+catch (...)
+{
+	// ...
+}
+
+- this will catch all exception, except those thrown by construction and destruction of global variables ( no way to catch these )
+- gaining control in case of throw from an initializer of a nonlocal static obj. is set_unexpected()
+- the exact poit of throwing is unknown -  - reason to not catch all exceptions from which the program is not designed to recover.
+
+
+
+14.8 Exceptions and Efficiency
+
+throw - more efficient than calling a function
+if not throw, no overhead
+
+-use exception-specification to refine the code of upper funtions - where we write the error parsing code
+int g()   | throw() - gives informations
+void f()
+{
+	string s;
+	g(1);  // don't know if need to process or not an error - catch
+	g(2); // could throw, s must be destroyed correctly
+}
+
+
+
+14.9 Error-Handling Alternatives
+
+2 parts of program - separately compiled, written independently
+- exception handling - inform 1 that 2 has an exceptional state
+- must agree about protocol
+- as protocol is generic, non-local, in early stages - best is a local error-handling
+
+Successful fault-tolerant systems are multilevel.
+
+
+
+14.10 Standard Exceptions
+
+Exception 								Thrown by											Reference														Header
+bad_alloc									new																6.2.6.2, 19.4.5											<new>
+bad_cast									dynamic_cast									15.4.1.1																<typeinfo>	
+bad_typeid							typeid														15.4.4																	<typeinfo>
+bad_exception					exception specification	14.6.3																	<exception>
+out_of_range					at()																3.7.2, 16.3.3, 20.3.3						<stdexcept>
+																bitset<>::operator[]()		17.5.3																	<stdexcept>
+invalid_argument			bitset constructor					17.5.3.1																<stdexcept>
+overflow_error					bitset<>::to_ulong()			17.5.3.3																<stdexcept>
+ios_base::failure			ios_base::clear()						21.3.6																	<ios>
+
+hierarchy based on exception from <exception>; standard library exception
+
+class exception {
+public:
+	exception() throw();
+	exception(const exception &) throw();
+	exception& operator =(const exception &) throw();
+	virtual ~exception() throw();
+	
+	virtual const char* what() const throw();
+private:
+//..
+};
+
+Hierarchy:
+
+exception:
+		logic_error
+		runtime_error
+	bad_alloc
+	bad_exception
+	ios_base::failure
+	bad_cast
+	bad_typeid
+	
+logic_error:
+	length_error
+	domain_error
+	out_of_range
+	invalid_argument
+	
+runtime_error
+	range_error
+	overflow_error
+	underflow_error
+
+
+void f()
+try {
+		// use standard library
+}
+catch(exception& e) {
+	cout << "standard library exception " << e.what() << '\n'; 		
+	// ...
+}
+catch (...) {
+	cout << "other exception\n";
+	// ...
+}
+
+-test whether the function call or the exception-handling mechanism runs out of memory first:
+
+void perverted()
+{
+	try {
+		throw exception(); 	// recursive exception throw
+	}
+	catch (exception& e) {
+			perverted();						// recursive function call
+			cout << e.what();	// - prevent compiler from re-using the memory occupied by the exception named e
+	}
+}
+
+
+
+14.11	Advice
+
+- Use exceptions for error handling
+- Don't use exceptions where more local control structures will suffice
+- Use the "resource allocation is initialisation" technique to manage resources
+- Not every program needs to be exception safe 
+- Use "resource acquisition is initialisation" and exception handlers to maintain invariants
+- Minimize the use of try-blocks. Use "resource acquisition is initialization" instead of explicit handler code
+- Not every function needs to handle every possible error
+- Throw an exception to indicate failure in a constructor
+- Leave operands in valid states before throwing an exception from an assignment 
+- Avoid throwing exceptions from destructors
+- Have main() catch and report all exceptions
+- Keep ordinary code and error-handling code separate
+- Be sure that every resource acquired in a constructor is released when throwing an exception in that constructor
+- Keep resource management hierarchical
+- Use exception-specifications for major interfaces
+- Beware of memory leaks caused by memory allocated by new not being released in case of an exception
+- Assume that every exception that can be thrown by a function will be thrown
+- Don't assume that every exception is derived from class eception
+- A library shouldn't unilateraly terminate a program. Instead, throw an exception and let a caller decide
+- A library shouldn't produce diagnostic output aimed at an end user. Instead, throw an exception and let caller decide
+- Develop an error-handling strategy early in a design 
+
+
+
+
+15 Class Hierarchies
+
+
+15.2 Multiple Inheritance
+
+class Task {
+//...
+	virtual void pending() = 0;
+};
+class Displayed {
+//...
+	virtual void draw() = 0;
+};
+class Satelite : public Task, public Displayed {
+//...
+	void pending();		//override Task::pending()
+	void draw();					// override Displayed::draw()
+};
+
+
+15.3 Ambiguity Resolution
+
+class Task {
+	void	debug_info* get_debug();
+};
+
+class Displayed {
+	void debug_info* get_debug();
+};
+
+void f(Satelite* sp)
+{
+	debug_info* dip = sp->get_debug();		// ERR: ambigous
+	dip = sp->Task::get_debug();								// ok
+	dip = sp->Displayed::get_debug();				// ok
+}
+
+ - best to resolve such problems by defining a new function 
+
+class Satelite : public Task, public Displayed {
+// ...
+	debug_info* get_debug()		// override Task::get_debug() and Displayed::get_debug()
+	{
+		debug_info* dip1 = Task::get_debug();
+		debug_info* dip2 = Displayed::get_debug();
+		return dip1->merge(dip2);
+	}
+};
+
+- A qualified name Telstar::draw
+
+class Talstar : public Satelite {
+	void draw()
+	{
+		draw();																			// oops! recursive call
+		Satelite::draw();												// finds Displayed::draw - if draw is not found in Satelite, compiler search in Task, then in Displayed
+		Displayed::draw();
+		Satelite::Displayed::draw();			// redundant double qualification
+	}
+};
+
+
+15.2.2 Inheritance and Using-Declarations
+
+class Task {
+//...
+	void debug(double p);		// print info only if priority is lower than p
+};
+class Displayed {
+//...
+	void debug(int v);	// the higher the 'v', the more debug information is printed
+};
+
+class Satelite : public Task, public Displayed {
+// ...
+};
+
+void g(Satelite* p)
+{
+	p->debug(1);							// error: ambigous. Displayed::debug(int) or Task::debug(double)?
+	p->Task::debug(1);		// ok
+	p->Displayed::debug(1); // ok
+}
+
+- 'using' allows a programmer to compose a set of overloaded functions from base and the derived class.
+	- fct declared in derived class hide functions that would otherwise be available from base
+	- virtual fct from base can be overriden as ever.
+	
+class A {
+public:
+	int f(int);
+	char f(char);
+	//...
+};
+
+class B {
+public:
+	double f(double);
+	//...
+};
+
+class AB: public A, public B {
+public:
+	using A::f;
+	using B::f;
+	char f(char);		// hides A::f(char)
+	AB f(AB);
+};
+
+void g(AB& ab)
+{
+	ab.f(1);			// A::f(int)
+	ab.f('a');			// AB::f(char)
+	ab.f(2.0);		// B::f(double)
+	ab.f(ab);		// AB::f(AB)
+}
+
+
+15.2.3 Replicated Base classes
+
+struct Link {
+	Link* next;
+};
+
+class Task : public Link {
+//...
+};
+class Displayed : public Link {
+//...
+};
+
+void mess_with_links(Satelite *p)
+{
+	p->next = 0;						// ERR: ambigous
+	p->Link::next = 0; 	// ERR: ambigous
+	p->Task::next = 0;	// ok
+	p->Displayed::next = 0;	//ok
+}
+
+
+15.2.3.1 Overriding	
+
+class Storable {
+public:
+	virtual const char* get_file() = 0;
+	virtual void read() = 0;
+	virtual void write();
+	virtual ~Storable() {}
+};
+
+class Transmitter : public Storable {
+public: 
+	void write();
+	//...
+};
+
+class Receiver : public Storable {
+public:
+	void write();
+	//...
+};
+
+class Radio : public Transmitter, public Receiver {
+public:
+	const char* get_file();
+	void read();
+	void write();
+	//...
+};
+
+- Typically, an overriding function calls its base class versions and then does the work specific to the derived class.
+
+void Radio::write()
+{
+	Transmitter::write();
+	Receiver::write();
+	// write radio-specific informations
+}
+
+
+15.2.4 Virtual Base Classes
+
+If base class (Storable) contains data - this information must not be duplicated - sharing information instead having multiple copy of the object
+
+class Storable {
+public:
+	Storable(const char* s);
+	virtual void read() = 0;
+	virtual void write();
+	virtual ~Storable() {}
+private:
+	const char* store;
+	
+	Storable(const Storable&);
+	Storable& operator=(const Storable&);
+};
+
+class Transmitter : public virtual Storable {
+public: 
+	void write();
+	//...
+};
+
+class Receiver : public virtual Storable {
+public:
+	void write();
+	//...
+};
+
+class Radio : public Transmitter, public Receiver {
+public:
+	void write();
+	//...
+};
+
+
+15.2.4.1 Programming Virtual Bases
+
+? the base will be shared?
+ctor of virtual base is called only once
+
+class A { // no ctor
+//...
+};
+
+class B {
+public:
+	B(); // default ctor
+	//...
+};
+
+class C {
+public:
+	C(int); // no default ctor
+	//...
+};
+
+class D : virtual public A, virtual public B, virtual public C
+{
+	D() { /* ... */ }		// error:  no default ctor for C
+	D(int i) : C(i) { /* ... */ }; // ok
+	//...
+};
+
+- the ctor for virtual base is called before the ctors for its derived classes.
+
+class Window {
+// basic stuff
+	virtual void draw();
+};
+
+class Window_with_border : public virtual Window {
+// border stuff
+	void own_draw();	// display the border
+	void draw();
+};
+
+class Window_with_menu : public virtual Window {
+	// menu stuff
+	void own_draw(); // display the menu
+	void draw();
+};
+
+class Clock : public Window_with_border, public Window_with_menu {
+//clock stuff
+	void own_draw();		// display the clock face and hands
+	void draw();
+};
+
+void Window_with_border::draw()
+{
+	Window::draw();
+	own_draw();		// display the border
+}
+
+void Window_with_menu::draw()
+{
+	Window::draw();
+	own_draw();	// display the menu
+}
+
+void Clock::draw()
+{
+	Window::draw();
+	Window_with_border::own_draw();
+	Window_with_menu::own_draw();
+	own_draw();		// display the clock face and hands
+}
+
+
+15.2.5 Using Multiple Inheritance
+
+-using multiple inheritance to provide implementations for abstract classes (see before 12.4.3)
+
+class BB_ival_slider
+	: public lval_slider				// interface
+	, protected BBslider			// implementation 
+{
+	// implementation of functions required by 'lval_slider' and 'BBslider'
+	// using the facilities provided by 'BBslider'
+}
+
+- the 2 classes play logically distinct roles
+	- public abstract providing interface
+	- protected concrete providing implementation "details"
+
+Multiple inheritance allows sibling classes to share information without introducing a dependence on a unique common  base class
+ - a virtual base class is needed if the base class cannot be replicated.
+'diamond shape' inheritance lattice is more manageable if 
+ - the virtual base class is abstract
+ - the classes directly derived from it are abstract 
+ 
+class BB_ival_slider : public virtual lval_slider, protected BBslider {... };
+class Popup_ival_slider : public virtual lval_slider { ... }
+class BB_popup_ival_slider'
+	: public virtual Popup_ival_slider, protected BB_ival_slider { ... };
+
+logic: all of derivations from the abstract classes that constitute our application's interfaces would become virtual.
+ - the most obvious and common techniques for implementing virtual bases impose time and space overhead that makes their extensive use within a class unatractive.
+- as abstract class holding no data, they could be replicated - to have no overhead ( lval_slider holds only a virtual table pointer)
+
+class BB_ival_slider : public lval_slider, protected BBslider {... };
+class Popup_ival_slider : public lval_slider { ... }
+class BB_popup_ival_slider'
+	: public  Popup_ival_slider, protected BB_ival_slider { ... };
+
+Problem: BB_popup_ival_slider can't be implicitely converted to lval_slider
+
+
+15.2.5.1 Overriding Virtual Base Functions
+
+
+class Window {
+	// ...
+	virtual void set_color(Color) = 0;		// set background color
+	virtual void prompt() = 0;
+};
+
+class Window_with_border : public virtual Window {
+	// ...
+	void set_color(Color); 		// control background color
+};
+
+class Window_with_menu : public virtual Window {
+	// ...
+	void prompt();	// control user interactions
+};
+
+class My_window : public Window_with_menu, public Window_with_border {
+	// ...
+};
+
+- we could override the same fct in different derived classes, but need  to override it in derived class
+
+class My_window : public Window_with_menu, public Window_with_border {
+	// ...
+	void prompt(); // don't leave user interactions to base
+};
+
+a class that provides some - but not all - of implementation for a virtual base class is often called a 'mixin'.
+
+
+
+15.3 Access Control
+
+A member class could be private, protected, or public
+
+private     - member fct and friends of the class
+protected - private + derived
+public       - any function 
+
+3 kind of functions accessing a class:
+ - fct implementing the class (its friends and members)
+ - fct implementing a derived class (the derived class' friends and memebers)
+ - other functions
+
+template <class T> class List {
+private:
+	struct Link { T val; Link* next;};
+	struct Chunk {
+			enum { chunk_size = 15 };
+			Link v [ chunk_size ];
+			Chunk* next;
+	};
+	Chunk* allocated;
+	Link* free;
+	Link* get_free();
+	Link* head;
+
+public:
+	class Underflow { }; // exception class
+	
+	void insert(T);
+	T get();
+	//...
+};
+
+template <class T> void List<T>::insert(T val)
+{
+	Link* lnk = get_free();
+	lnk->val = val;
+	lnk->next = head;
+	head = lnk;
+}
+
+template <class T> typename List<T>::Link* List<T>::get_free()
+{
+	if (free == 0) {
+			// allocate a new chunk and place its Links on the free list
+	}
+	Link* p = free;
+	free = free-> next;
+	return p;
+}
+
+template <class T> T List<T>::get()
+{
+	if(head == 0) throw Underflow();
+	
+	Link* p = head;
+	head = p->next;
+	p->next = free;
+	free = p;
+	return p->val;
+}
+
+
+15.3.1 Protected Members
+
+class Window_with_border {
+public : 
+	virtual void draw ();
+	// ...
+protected :
+	void own_draw();
+	// other tool-building stuff
+private :
+	// representation, etc.
+};
+
+
+15.3.1.1 Use of Protected Members
+
+- protected members - for derived classes - specify operations to be used in derived classes 
+- data protected = design error; public - the same because of maintenance
+
+
+15.3.2 Access to Base Classes
+
+class X : public       B      { /* ... */ };
+class Y : protected B      { /* ... */ };
+class Z : private     B      { /* ... */ };
+
+- public derivation -> derived class = subtype of its base
+- protected and private -> used to represent implementation details
+		- protected - class hierarchies in which further derivation is the norm 
+		- private - defining a class by restricting the interface to the base ( ex Vector of pointers template adds type checking to its Vector<void*> base
+		template <class T> class Vec : private vector<T> { /* ... */ };  // range checked vector
+
+Implicit:
+class XX : B { /* ... */ };		// B is a private base
+struct YY : B { /* ... */ };   // B is a public base
+
+The access specifier for a base class controls the access to members of the base class and the conversion of pointers and references from the derived class type to the base class type.
+class D derived from class B
+	- if B is private base, its public and protected members used by member functions and friends of D. Friends and members of D can convert D* to B*
+	- if B is protected base, its public and protected members used by member functions and friends of D and by friends and members of classes derived from D. Friends and members of D and derived from D can convert D* to B*
+	- if B is public base, its public members can be osed by any function. Its protected members can be used by members and friends of D and derived. Any function can convert D* to B*
+	
+[chosed BBwindow a protected baseof lval_slider because BBwindow was part of implementation of lval_slider rather than part of its interface. Not able to hide BBwindow - private- because wanted to be able to derive further clases from lval_slider - and these classes need access to the implementation]
+
+
+15.3.2.1 Multiple Inheritance and Access Control
+
+struct B {
+	int m;
+	static int sm;
+	//...
+};
+
+class D1 : public virtual B { /* ... */ };
+class D2 : public virtual B { /* ... */ };
+class DD : public D1, private D2 { /* ... */ };
+
+DD* pd = new DD;
+B* pb = pd;								// ok accessible through D1
+int i1 = pd->m;					// ok accessible through D1
+
+---
+
+class X1 : public B { /* ... */ };
+class X2 : public B { /* ... */ };
+class XX : public X1, public X2 { /* ... */ };
+
+XX* pxx = new XX;
+int i1 = pxx->m;				// error: ambigous: XX:X1::B::m or XX::X2::B::m
+int i2 = pxx->sm;			// ok: there is only one B::sm in an XX
+
+
+15.3.2.2  Using-Declarations and Access Control
+
+- a using-declaration cannot be used to gain access to additional information 
+
+class B {
+private:
+	int a;
+protected:
+	int b;
+public:
+	int c;
+};
+class D : public B {
+public:
+	using B::a;					// error: B::a is private 
+	using B::b;					// make B::b publicly available through D
+};
+
+- when using-declaration is combined with private/protected derivation, it can be used to specify interfaces to some of facilities usually offered by a class:
+
+class BB : private B {		// give access to B::b and B::c, but not to B::a
+public:
+	using B::b;
+	using B::c;
+};
+
+
+
+15.4 Run-Time Type Information
+
+-inspect a type of an object at the runtime  - type conversion that returns a valid pointer if the objet is of the expected type.
+
+void my_event_handler(BBwindow* pw)
+{
+	if(lval_box* pb = dynamic_cast<lval_box*>(pw) ) // does pw point to an lval_box?
+		pb->do_something();
+	else {
+		// Oops! unexpected event
+	}
+}
+- dynamic_cast translates from the implementation-oriented language of the user-interface system to the language of the application.
+	- not specified the actual type of obj = lval_box type like lval_slider implemented by BBwindow type like BBslider
+
+pb = dynamic_cast<lval_box*>(pw) is equivalent to:
+pw ...> BBwindow <___ BBslider <---  BB_ival_slider  ___> lval_slider ___> lval_box <... pb
+
+- downcast - casting to a base to a derived class
+- upcast - derived to base
+- crosscast - cast from a base to a sibling class (BBwindow to lval_box)
+
+
+15.4.1 Dynamic_cast 
+
+pointer case:
+dynamic_cast<T*>(p)
+- if p is of type T* or of type D* where T is a base of class D, the result is like assign p to a T*
+
+class BB_ival_slider : public lval_slider, protected BBslider {
+	//...
+};
+
+void f (BB_ival_slider* p)
+{
+	lval_slider* pi1 = p;				// ok
+	lval_slider* Pi2 = dynamic_cast<lval_slider *>(p);	// ok
+	
+	BBslider* pbb1 = p;				// error: BBslider is a protected base
+	BBslider* pbb2 = dynamic_cast<BBslider*>(p);			// ok: pbb2 becomes 0
+}
+-- the purpose is to deal with conversion where the correctness could not be checked by compiler
+
+dynamic_cast<T*> (p)
+ - looks at the object pointed to by p
+ - if that object is of class T or has a unique base class of type T, then dynamic_cast returns a pointer of type T* to that object; otherwise 0
+ - if the value of p is 0, 0 is returned
+ - requires a pointer or a reference to a polymorphic type in order to do a downcast or a crosscast.
+
+class My_slider : public lval_slider {	// polymorphic base (lval_slider has virtual functions)
+	//...
+};
+
+class My_date : public Date {	// base not polymorphic (Date has no virtual functions)
+	// ...
+};
+
+void g(lval_box* pb, Date* pd)
+{
+	My_slider* pd1 = dynamic_cast<My_slider*>(pb);			// ok
+	My_date*  pd2 = dynamic_cast<My_date*>(pd); 			// error: Date not polymorphic
+}
+
+- the target type of dynamic_cast need not be polymorphic.
+	- allows to wrap a concrete type in a polymorphic type - say for transmission through an object I/O system 
+
+class Io_obj {		// base class for object I/O system 
+	virtual Io_obj* clone() = 0;
+};
+
+class Io_date : public Date, public Io_obj { };
+
+void f(Io_obj* pio)
+{
+	Date* pd = dynamic_cast<Date*>(pio);
+	//...
+}
+
+A dynamic_cast to void* can be used to determine the address of  the beginning of an object of polymorphic type.
+
+void g(lval_box* pb, Date* pd)
+{
+	void* pd1 = dynamic_cast<void*>(pb);			// ok
+	void* pd2 = dynamic_cast<void*>(pd);			// error: Date not polymorphic
+}
+
+- For apointer p, dynamic_cast<T*>(p) can be seen as a question: "Is the object pointed to by p of type T?"
+
+
+15.4.1.1	Dynamic_cast of References
+
+- A reference refers to an object. 
+- dynamic_cast<T&>(r) of a reference r is not a question but an assertion: "The object referred to by r is of type T"
+-the result is tested by dynamic_cast itself -> bad_cast 
+
+void f(lval_box* p, lval_box& r)
+{
+	if(lval_slider* is = dynamic_cast<lval_slider*> (p) ) {	// does p point to an lval_slider?
+			// use 'is'
+	} else {
+			// *p not a slider
+	}
+	
+	lval_slider& is = dynamic_cast<lval_slider&> (r);				// r references an lval_slider!
+			// use 'is'
+			
+}
+
+void g ()
+{
+	try {
+			f(new BB_ival_slider, *new BB_ival_slider);		// arguments passed as lval_boxs
+			f(new BBdial, *new BBdial);															//	arguments passed as lval_boxs - cause bad_cast
+	}
+	catch (bad_cast) { // 14.10
+		// ...
+	}
+}
+
+
+15.4.2 Navigating Class Hierarchies
+
+- simple hierarchie. - need to navigate it to find an apropriate class to use as an interface.
+
+class Component : public virtual Storable { /* ... */ };
+class Receiver : public Component  { /* ... */ };
+class Transmitter : public Component   { /* ... */ };
+class Radio : public Receiver, public Transmitter  { /* ... */ };
+
+- dynamic_cast from Storable to Component within a Radio = 0
+
+void h1(Radio& r)
+{
+	Storable* ps = &r;
+	//...
+	Component* pc = dynamic_cast<Component*>(ps);	// pc = 0;
+}
+
+This ambiguity is not in general detectable at compile time:
+
+void h2(Storable* ps)	// ps might or might not point to a Component
+{
+	Component* pc = dynamic_cast<Component*> (ps);
+	// ...
+}
+- happens only for virtual bases
+
+
+15.4.2.1 Static and Dynamic Casts
+
+- dynamic_cast can cast from a polymorphic virtual base class to a derived class or a sibling class
+- static_cast does not examine the object it casts from, so it cannot:
+
+void g(Radio& r)
+{
+	Receiver* prec = &r;																	// Receiver is ordinary base of Radio
+	Radio* pr = static_cast<Radio*>(prec);		// ok, unchecked
+	pr = dynamic_cast<Radio*>(prec);						// ok, runtime checked
+	
+	Storable* ps = &r;																			// Storable is virtual base of radio
+	pr = static_cast<Radio*>(ps);										// error: cannot cast from virtual base
+	pr = dynamic_cast<Radio*>(ps);							// ok: run-time checked
+}
+
+- an object of a type with layout constraints determined by some other language (Fortran, C) - may be used as a virtual base class.
+	- for objects as such types, only static type information will be available.
+	- information neede to provide run-time type identification includes the information needed to implement the dynamic_cast.
+	
+? why would anyone want to use a static_cast for class hierarchies navigation ?
+  - small runtime cost for dynamic_cast (15.4.1)
+	- existent code - 
+  - the compiler cannot assume anything about void*
+
+Radio* f(void* p)
+{
+	Storable* ps = static_cast<Storable*>(p); // trust the programmer
+	return dynamic_cast<Radio*>(ps);
+}
+
+- both dynamic_cast and static_cast respect const
+
+class Users : private set<Person> { /* ... */ };
+
+void f(Users* pu, const Receiver*pcr)
+{
+	static_cast    <set<Person>*>(pu);		// error: access violation
+	dynamic_cast<set<Person>*>(pu);    // error: access violation
+	
+	static_cast<Receiver*>(pcr);								// error: can't cast away const
+	dynamic_cast<Receiver*>(pcr);					// error: can't cast away const
+	
+	Receiver* pr = const_cast<Receiver*>(pcr);	// ok
+}
+
+- it is not possible to cast to a private base class and casting away const or volatile (requires a const_cast)
+	- even then, using the result is safe only if the object was not originally declared const or volatile
+
+
+15.4.3 Class Object Construction and Destruction
+
+- construction is bottom up, destruction is top downcast
+- avoid virtual functions calling during construction or destruction because the object is incomplete
+
+
+15.4.4 Typeid and Extended Type Information
+
+- dynamic_cast preserves flexybility and extensibility in a manner similar to virtual functions
+- like to know the name of the object's class or its layout
+
+class type_info;
+const type_info& typeid(type_name) throw();										// pseudo declaration
+const type_info& typeid(expression) throw ( bad_typeid);	// pseudo declaration 
+
+void f(Shape& r, Shape* p)
+{
+	typeid(r);						// type of object referred to by r
+	typeid(*p);				// type of object pointed to by p
+	typeid(p);					// type of pointer, that is Shape* (uncommon, except as mistake)
+}
+
+if a value of a pointer operand of a polymorphic type is 0, typeid() throws a bad_typeid exception
+if the operand of typeid() has a non polymorphic type or is not an lvalue, the result is determined at compile time without evaluating the operand expression
+
+class type_info {
+public:
+	virtual ~type_info();						// is polymorphic
+	
+	bool operator == (const type_info&) const;		// can be compared
+	bool operator != (const type_info&) const;
+	bool before (const type_info&) const;							// ordering
+	
+	const char* name() const;																// name of type
+
+private:
+	type_info(const type_info&);														// prevent copying
+	type_info& operator=(const type_info&);				// prevent copying
+	// ...
+};
+
+- before() allow type_infos to be sorted
+
+#include <typeinfo>
+
+void g(Component* p)
+{
+	cout << typeid(*p).name();
+}
+
+----- gnu afiseaza nr caractere+clasa : 9Component
+
+
+15.4.4.1  Extended Type Information
+
+map<string, Layout> layout_table;
+
+void f(B* p)
+{
+	Layout& x = layout_table[typeid(*p).name()];
+	// use x
+}
+
+struct TI_eq {
+	bool operator() (const type_info* p, const type_info* q) { return *p == *q; }
+};
+
+struct TI_hash {
+	int operator() (const type_info* p); // compute hash value 
+};
+
+hash_map<const type_info*, Icon, TI_hash, TI_eq> icon_table;	// 17.6
+
+void g(B* p)
+{
+	Icon& i = icon_table[&typeid(p*)];
+	// use i
+}
+
+
+15.4.5 Uses and Misuses of RTTI
+
+// misuse of run-time type information 
+
+void rotate(const Shape& r)
+{
+	if (typeid(r) == typeid(Circle) ) {
+			// do nothing
+	}
+	else if (typeid(r) == typeid(Triangle) ) {
+			// rotate triangle
+	}
+	else if (typeid(r) == typeid(Square) ) {
+			// rotate square
+	}
+	// ...
+}
+ - using dynamic_cast rather than typeid would improve code only marginally.
+
+-Use virtual functions rather than RTTI to handle most cases when run-time discrimination based on type is needed
+
+Proper use:
+- some service code is expressed in terms of one class and a user wants to add functionality through derivation. (15.4 lval_box)
+
+// misuse of run-time type information 
+
+class Object { /* ... */ }; // polymorphic
+
+class Container : public Object {
+public:
+	void put(Object*);
+	Object* get();
+	// ...
+};
+
+class Ship : public Object { /* ... */ };
+
+Ship* f(Ship* ps, Container* c)
+{
+	c->put(ps);
+	// ...
+	Object* p = c->get();
+	if (Ship* q = dynamic_cast<Ship*>(p) { // run-time check
+		return q;
+	}
+	else {
+		// do something else (typically, error handling)
+	}
+}
+
+- here, class Object is an unnecessary implementation artefact
+--- Pb solved by using container templates that hold only a single kind of pointer:
+
+Ship* f(Ship* ps, list<Ship*>& c)
+{
+	c.push_front(ps);
+	// ...
+	return c.pop_front();
+}
+- combined with the use of virtual functions, this technique handles most cases
+
+
+15.5 Pointers to Members
+
+Pure Interface class = a layer of software between the person or program issuing the request and the object receiving it.
+
+class Std_iface {
+public: 
+	virtual void start() = 0; // suspend,resume, quit;<full_size, small
+	
+	virtual ~Std_iface() { }
+};
+	
+The exact meaning is defined by object on which it is invoked.
+
+Middle layer = transit information - ex: strings like "suspend" or a number/index
+C++ facilitate: need a pointer to Std_iface::suspend() and also a pointer or reference to the object I want to suspend.
+
+typedef void (Std_iface::*Pstd_mem) ();		// pointer to member type
+
+void f(Std_iface* p)
+{
+	Pstd_mem s = &Std_iface::suspend;
+	
+	p->suspend();		// direct call
+	
+	(p->*s) ();					// call through pointer to member
+}
+
+- A pointer to member can be obtained by applying the address-of operator & to a fully qualified class member name: &Std_iface::suspend
+- A variable of type "pointer to member of class X" is declared using a declarator of the form : X::*
+	 - X::* declarator match the traditional *
+
+- A pointer to member m can be used in combination with an object
+- The operators ->* and .*   :  p->*m binds m to the object pointed by p, and obj.*m binds m to the object obj (result in accoordance with m's type)
+	- it is not possible to store the result of a ->* or a .* operation for a later use.
+	
+- should be viewed like an offset 
+- like pointers to ordinary fct , pointer to non-virtual  members cannot be exchanged between address spaces
+- can be virtual
+
+An interpreter might use pointers to members to invoke functions presented as strings:
+
+map<string, Std_iface*> variable;
+map<string, Pstd_mem> operation;
+
+void call_member(string var, string oper)
+{
+	(variable[var] ->* operation[oper])();		// var.oper()
+}
+
+- see also mem_fun() (3.8.5;18.4)
+
+- a static member isn't asociated with a particular object => a pointer to a static member is an ordinary pointer.
+
+class Task {
+	// ...
+	static void schedule();
+};
+
+void(*p)() = &Task::schedule;					// ok
+void (Task::*pm)() = &Task::schedule; 	// error: ordinary pointer assigned to pointer to member
+
+
+15.5.1  Base and Derived Classes
+
+derived class include the base class => we can safely assign a pointer to a member of a base classto a pointer to a member of a derived class.
+ - this property = 'contravariance'
+
+class text : public Std_iface {
+public:
+	void start();
+	void suspend();
+	// ...
+	virtual void print();
+private:
+	vector s;
+};
+
+void (Std_iface::* pmi) () = &text::print;		// error
+void (text::*pmt)() = &Std_iface::start;		// ok
+
+
+
+15.6 Free Store
+
+- take over memory management for a class
+
+class Employee {
+// ...
+public:
+//...
+	void* operator new(size_t);
+	void		operator delete(void*, size_t);
+
+};
+
+- member new and delete are implicitly static members. => they don't have "this" pointer.
+
+void* Employee::operator new(size_t s)
+{
+		// allocate 's' bytes and return a pointer to it
+}
+
+void Employee::operator delete(void* p, size_t s)  // s will be computer calculated size of object
+{
+		// assume 'p' points to 's' bytes allocated by Employee::operator new()
+		// and free that memory for reuse
+}
+
+class Manager : public Employee {
+	int level;
+	// ...
+};
+
+void f()
+{
+	Employee* p = new Manager; 		// trouble ( the exact type is lost)  - s in delete is wrong
+	delete p;
+}
+
+-user must help
+clas Employee {
+public:
+	void* operator new(size_t);
+	void operator delete(void*, size_t);
+	virtual ~Employee() {}  // adding even an empty destructor
+}
+- deallocation is done from destructor that knows the size.
+- every class have a destructor even if not a user defined
+
+void f()
+{
+	Employee* p = new Manager;
+	delete p;		// now fine (Employee is polimorphic)
+}
+
+Allocation is done by a (compiler generated) call:
+			Employee::operator new(sizeof(Manager))
+and deallocation by a (compiler-generated) call:
+			Employee::operator delete (p, sizeof(Manager))
+			
+Allocator/deallocator  pair works correctly for derived classes:
+ - supply virtual destructor
+ - OR refrain from using the size_t argument in daeallocator.
+ 
+
+15.6.1	Array Allocation
+
+... the same
+
+class Employee {
+public:
+	void* operator new []  (size_t);
+	void  operator delete [] (void*];
+};
+
+
+void f (int s)
+{
+	Employee* p = new Employee[s];
+	//...
+	delete[] p;
+}
+
+- memory needed: Employee::operator new[] (sizeof(Employee)*s+delta)  where delta is implementation defined overhead
+- memory released : Employee::operator delete[] (p): // release sµsizeof(Employee)+delta bytes
+
+
+15.6.2 "Virtual constructors"
+
+To construct an obj a constructor need to extract the  type of the object to be created
+	- different memory management
+	- cannot have pointers
+
+- create  an object without knowing its exact type could be useful. (see 12.4.4 lval_box_maker)
+
+class Expr {
+public:
+	Expr();						// default ctor
+	Expr(const Expr&);	// copy ctor
+	
+	virtual Expr* new_expr() const { return new Expr(); }
+	virtual Expr* clone() const { return new Expr (* this); }
+	//...
+	
+};
+
+- new_expr, clone - virtual constructors ... misuse
+
+class Cond : public Expr {
+public:
+	Cond;
+	Cond(const Cond&);
+	
+	Cond* nex_expr() const { return new Cond(); }
+	Cond* clone() const { return new Cond(* this); }
+	//...
+	
+};
+
+- given an obj of class Expr,  a user can create a new object of 'just the same type'.
+
+void user(Expr* p)
+{
+	Expr* p2 = p->new_expr();
+	//...
+}
+
+void user2(Cond* pc, Expr* pe)
+{
+	Cond* p2 = pc->clone();
+	Cond* p3 = pe->clone(); // error
+	// ...
+}
+
+- The type of an overriding function must be the same as the type of the virtual function it overrides.
+
+The covariant return rule:
+	- if the original return type was B*, then the return type of the overriding function  may be D*, provided B is a public base of D.
+	- Similary, a return type of B& may be relaxed to D&. 
+
+- similar relaxation rules for arguments types would lead to type violations (15.8[12])
+
+
+
+15.7 Advice
+- Use ordinary multiple inheritance to express a union of features
+- Use multiple inheritance to separate implementation details fronm an interface
+- Use a virtual base to represent something common to some, but not all, classes in hierarchy
+- Avoid explicit type conversion (casts)
+- Use dynamic_cast where class hierarchy navigation is unavoidable
+- Prefer dynamic_cast over typeid
+- Prefer private to protected
+- Don't declare data members protected
+- If a class defines operator delete(), it should have a virtual destructor
+- Don't call virtual functions during construction or destruction
+- Use explicit qualification for resolution of member names sparingly and preferably use it in overriding functions
+
+
+
+
+
+PART III
+
+THE STANDARD LIBRARY
+
+
+
+16 Library organization and containers
+
+
+16.1 Standard Library Design
+
+The C++ standard library:
+
+1. Provides support for language features, such as memory management and runtime type information.
+2. Supplies information about implementation-defined aspects of the language, such as the largest float value.
+3. Supplies functions that cannot be implemented optimally in the language itself for every system, such as sqrt() and memmove()
+4. Supplies nonprimitive facilities that a programmer can rely on for portability, such as the lists, maps, sort functions and I/O streams.
+5. Provides a framework for extending the facilities it provides, such as conventions and support facilities that allow a user to provide I/O of user-defined type in the style of I/O for build-in types.
+6. Provides the common foundation for other libraries.
+- in addition provide also facilities like random-number generators, etc... useful things 
+
+
+16.1.2 Standard Library Organization
+
+
+Containers:
+<vector>		one-dimension array of T		16.3
+<list>					doubly-linked list of T					17.2.2
+<deque>		double-endedd queue of T	17.2.3
+<queue>		queue of T	17.3.2
+<stack>			stack of T	17.3.1
+<map>				associative array of T	17.4.1
+<set>				set of T	17.4.3
+<bitset>		array of booleans	17.5.3
+
+- associative containers multimap and multiset can be found in <map> and <set>. priority_queue is in <queue>
+
+General Utilities:
+<utility>				operators and pairs			17.1.4; 17.4.1.2
+<functional> function objects		18.4
+<memory>		allocators for containers 19.4.4
+<ctime>				C-style date and time	20.5
+
+- auto_ptr template - smooth the interaction between pointers and exceptions - is in <memory>
+
+Iterators:
+<iterator> 		iterators and iterator support	19
+- iterators provide the mechanism to make standard algorithms generic over the standard containers and similar types (2.7.2; 19.2.1)
+
+Algorithms:
+<algorithm>		general algorithms	18
+<cstdlib>				bsearch() qsort()		18.11
+
+Diagnostics:
+<exception>	exception class	14.10
+<stdexcept>	standard exceptions	14.10
+<cassert>			assert macro		24.3.7.2
+<cerrno>				C-style error handling	20.4.1
+
+Strings:
+<string>		string of T		20
+<cctype>		character classification		20.4.2
+<cwtype>	wide-character classification	20.4.2
+<cstring>		C-style string functions	20.4.1
+<cwchar>	C-style wide-character string functions	20.4
+<cstdlib>		C-style string functions 20.4.1
+- strlen, strcpy, etc. family of functions are in cstring. The cstdlib declares atof, atoi.
+
+Input/Output:
+<iosfwd>			forward declarations of I/O facilities 21.1
+<iostream>	standard iostream objects and operations	21.2.1
+<ios>						iostream bases		21.2.1
+<streambuf> stream buffers	21.6
+<istream>		input stream template 21.3.1
+<ostream>	output stream template 21.3.1
+<iomanip>		manipulators	21.4.6.2
+<sstream>		streams to/from strings	21.5.3
+<cstdlib>			character classification functions	20.4.2
+<fstream>		streams to/from files	21.5.1
+<cstdio>			printf() family of I/O	21.8
+<cwchar>		printf() -style I/O of wide characters	21.8
+- manipulators = objects used to manipulate the state of a stream
+
+Localization:
+<locale>		represent cultural differences	21.7
+<clocale>		represent cultural differences C-style	21.7
+- a locale localizes differences such as the output format for dates, the symbol used to represent currency, and string collation criteria that vary among different natural languages and cultures.
+
+Language support:
+<limits>				numeric limits		22.2
+<climits>			C-style numeric scalar-limit macros	22.2.1
+<cfloat>				C-style	numeric floating-point limit macros	22.2.1
+<new>					dynamic memory management	16.1.3
+<typeinfo>		run-time type identification support 	15.4.1
+<exception>	exception-handling support 	14.10
+<cstddef>		C library language support 6.2.1
+<cstdarg>		variable-length function argument lists 7.6
+<csetjmp>		C-style stack unwinding	18.7
+<csdtlib>			program termination	9.4.1.1
+<ctime>				system clock 18.7
+<csignal>			C-style signal handling	18.7
+- <cstddef> header defines the type of values returned by sizeof(), size_t, the type of the result of pointer substraction, ptrdiff_t (6.2.1), and NULL (5.1.1)
+
+Numerics:
+<complex>		complex numbers and operations	22.5
+<valarray>		numeric vectors and operations 22.4
+<numeric>		generalized numeric operations 22.6
+<cmath>			standard mathematical functions 22.3
+<cstdlib>			C-style random numbers	22.7
+- for historical reasons, abs(), fabs(), and div() are found in <cstdlib> rather than in <math>
+
+
+16.2 Container Design
+
+- an object that holds other objects.
+- each iterator access incurs the overhead of a virtual function call. (the time overhead can be serious compared to simple inlined access functions) 
+
+16.2.2 Based Containers
+
+struct !link {
+	Link* pre;
+	Link* suc;
+	//...
+};
+class List {
+	Link* head;
+	Link* curr;
+public:
+	Link* get();	// remove and return current element 
+	void put(Link*); 	//insert before current elem
+	//..
+	};
+
+class Ship: public Link { ... };
+void f(List* lst)
+{
+	while(Link* po = lst->get()) {
+		if(Ship* ps = dynamic_cast<Ship*>(po)) {	// Ship must be polymorphic
+			// use ship
+			}
+			else {
+				// something else 
+				}
+		}
+}
+
+- fat interface = union of interfaces to a set of concepts - union of essential operations on the variety of containers we intend to support.
+
+common container:
+
+class Container : public Object {
+public:
+	virtual Object* get();		// remove and return current element
+	virtual void put(Object*);	// insert before curent element
+	virtual Object*& operator[](site_t);	// subscripting
+// ...
+};
+class List : public Container {
+public :
+	Object* get();
+	void put(Object*);
+//...
+};
+class Vector : public Container {
+public : 
+	Object*& operator[](site_t);
+	//...
+};
+??? operations on Container? intersection of all containers supported = 0; so => union of all essentials - fat interface
+	- provide default implem of the functions in fat iface
+OR - force every derived class to implement every function
+
+class Container : public Object {
+public:
+	struct Bad_op {	// exception class
+		const char* p;
+		Bad_op(const char* pp) : p(pp) {}
+	};
+	
+	virtual void put(Object*) { throw Bad_op("put"); }
+	virtual Object* get() { throw Bad_op ("get");}
+	virtual Object*& operator[](int) { throw Bad_op("[]");}
+	// ...
+};
+
+class Ship : public Object { /* ... */};
+
+void f1(Container* pc)
+{
+	try {
+		while  (Object* po = pc->get()) {
+			if(Ship* ps = dynamic_cast<Ship*>(po) {
+				// use Ship
+			} else {
+			// do smth else
+			}
+		}
+	}
+	catch(Container::Bad_op& bad) {
+		// oops, do something else..
+	}
+}
+by relying on exception caught elsewhere:
+void f2(Container *pc)
+{
+	while(Object* po = pc->get()){
+		Ship& s=dynamic_cast<Ship&>(*po);
+		//use ship
+	}
+}
+prefer statically checked alternative:
+void f3(Itor<Ship>* i)
+{
+	while (Ship* ps=i->next()) {
+		//use ship
+	}
+}	
+
+
+Weakness of "based container"
+- Operations on individual containers = virtual function overhead
+- All containers derived from Container - fat ifaces, runtime checking, foresight
+- containers are heterogeneous and not type safe by default (can be ok by templates)
+- a retrieved element must cast a proper type before it can be used
+
+Strength:
++common base Container makes it easy to use containers that supply similar sets of ops interchangeably
++Class Container and class Object are handles for implementing services for every object or container. ( provision universal services like I/O or persistence)
+
+
+16.2.3 STL Containers
+
+- Take advantage of late abstraction
+- Avoid fat interfaces
+- Prefer algorithms with reverse iterators over explicit loops dealing with reverse order
+- Use base()  to extract an iterator from reverse_iterator
+- Pass containers by reference
+- Use iterator types, such as list<char>::iterator, rather than pointers to refer to elements of a container
+- at() range checking
+- don't use iterators into a resized vector
+- use reserve() to avoid invalidationg iterators
+- when necessary, use reserve() to make performance predictable
+
+17. Standard containers
+
+17.2 Sequences
+
+- vector
+- list
+- deque
+
+from these - providing suitable ifaces - ;  container adapters - adapters
+
+stack
+queue
+priority_queue
+
+17.2.1 Vector
+
+- reserving spaaaaace - unique to vector
+- subscripting [] is not range checked, use at(), a checked vector or a checked iterator
+- provides r  ndom-access iterators
+
+17.2.2 List
+
+- sequence optimized for insertion and deletion
+- no subscripting, capacity, reserve, provides bidirectional iterators
+
+17.2.3 Deque
+
+- operations at both ends are about as eficient as for list, whereas subscripting approaces the efficiency of a vector
+- additions and deletions take place at 'the ends'
+
+
+17.3 Sequence adapters
+
+Vector, list, deque sequences cannot be built from each other without loss of efficiency.
+A container adapter provides a restricted interface to a container. In particular, adapters do not provide iterators; thy are intended to be used only through their specialized interfaces.
+
+
+17.3.1 Stack
+
+- is simply an iface to a container ofthe type passed to it as a template argument.
+- eliminate non stack operations and give back(), push_back(), pop_back() their conventional names: top(), push() and pop()
+- by default use deque, but could use any sequencccce that provides these fct:
+ stack<char> sl; // use defaul tdeque to store elements of type char
+ stack< int, vector<int> < s2; // use a vector<int> to store elements of type int
+use existing vector:
+ vector<int>& v
+ stack< int, vector<int> > state(v); // elements of container are copied - using push_back()
+- can underflow: top() to use, pop() to eliminate
+- does not have an allocator template parameter
+
+
+17.3.2 Queue
+
+- interface to a container that allows the insertion of elements at the back() and extraction at the fron()
+- use deque or other sequence that provides front(), back(), push_back(), pop_front()  (vector does not provide pop_front() )
+
+struct Message {
+//...
+};
+
+void server2(queue<Message>&q, Lock& lck)
+{
+  while(!q.empty()) {
+    Message m;
+    { LockPtr h(lck); // hold lock only while extracting message
+      if(q.empty()) return; // somebody else got a message
+      m=q.front();
+      q.pop();
+    }
+    m.service()     // call function to serve request
+  }
+}
+
+
+17.3.3 Priority Queue
+
+- queue with each element is given a priority that controls the order in which the elements get to be top()
+- by default priority_queue simply compares elements using < operator and top() returns the largest element.
+- push/pop/top
+- use vector by default; any sequence that provides: front()/push_back()/pop_back() and random iterators
+
+struct Message {
+int priority;
+bool operator<(const Message& x) const { return priority<x.priority; }
+}
+void server(priority_queue<Message>&q,  lock& lck) ...
+
+priority_queue<string, vector<string>, Nocase> pq;  // use Nocase for comparisons
+priority_queue<string>& pql = pq; // error: type mismatch
+
+we can supply a comparison criterion without affecting the type of a priority_queue:
+
+struct String_cmp { // type used to express comparison criteria at run time
+  String_cmp(int n=0);  // use comparison criteria n
+  // ...
+}
+
+typedef priority_queue<string, vector<string>, String_cmp> Pqueue;
+
+void g(Pqueue& pq)  // pq uses String_cmp() for comparisons
+{
+  Pqueue pq2(String_cmp(nocase) );    // "nocase" is a const used to indicate case insensitivity
+  pq = pq2;     // ok: pq and pq2 are of the same type, pq now also use String_cmp(nocase)
+}
+
+using a tree struct as container, cost = O(log (n)) for push/pop
+- A priority_queue is most likely implemented using a heap.
+
+
+ 
+17.4 Asociative containers
+
+
+[480]
+
+

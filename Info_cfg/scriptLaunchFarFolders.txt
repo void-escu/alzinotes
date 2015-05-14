@@ -1,0 +1,1 @@
+start far /ag c:\Windows\system32 c:\Users\i051425\Downloads

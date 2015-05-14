@@ -1,0 +1,1291 @@
+------------------------------
+Discussion - Keyword arguments
+------------------------------
+
+class window {
+	//...
+	public:
+		
+	window(
+		wintype = standard,
+		int ul_corner_x=0,
+		int ul_corner_y=0,
+		int xsize = 100, 
+		int ysize = 100,
+		color Color = black,
+		border Border = single,
+		color Border_color=blue,
+		WSTATE window_state=open);
+	//...
+};
+
+new window(standard, 0, 0, 100, 150, green);
+
+new window(standard, 0, 0, 100, 150, green, single, blue, open);
+
+
+------------------
+// channelin usage into a few common forms - make code and behavior more regular 
+
+class colored_window : public window {
+	public:
+		colored_window(color c=black)
+	:window(standard, 0,0,100,100,c) {}
+};
+
+class bordered_window : public window {
+	public:
+		bordered_window(borderb=single, color bc=blue)
+		:window(standard, 0, 0, 100, 100, black, b, bc) {}
+};
+		
+
+------------------------------
+// easy way to pass objects representing arguments around a program
+
+class w_args {
+		wintype wt;
+	int ulcx, ulcy, xz, yz;
+	color wc, bc;
+	border b;
+	WSTOATE ws;
+public:
+		w_args() // set defaults
+			: wt(standard), ulcx(0), ulcy(0), xz(100), yz(100),
+			wc(black), b(single), bc(blue), ws(open) {}
+				
+		// override defaults
+				
+		w_args& ysize(int s) { yz = s, return *this; }
+		w_args& Color(color c) { wc = c, return *this; }
+		w_args& Border(border bb) { b = bb, return *this; }
+		w_args& Border_color(color c) { bc = c, return *this; }
+		//...
+};
+
+class window {
+	// ...
+	window(w_args wa); // set options from wa
+	// ...
+};
+
+	window w;	// default window
+	window w(w_args().Color(green).ysize(150));
+---------------------------------------------------------------------------------------------------
+
+
+
+part1:
+int fct(int argument1, char* argument2[] );
+
+int main(int argc, char* argv[])
+{
+  fct(argc, argv);
+  return 0;
+
+}
+
+part2:
+#include <stdio.h>
+
+int fct(int blah, char* blbl[])
+{
+  printf("args: %i, %s\n", blah, blbl[0]);
+}
+---------------------------------------------------------------------------------------------------
+
+#include <stdio.h>
+
+/*
+// -trigraphs
+//    #     [     {      \     ]      }     ^    |    ~
+// ??=  ??(  ??<  ??/  ??)  ??>  ??'  ??!  ??-
+
+int main(int argc, char* argv??(??) )
+??< 
+  if (argc<=1 ??!??! *argv??(1??) == '??/0') return 0;
+  printf("Hello, %s??/n", argv??(1??) );
+??>
+*/
+
+// digraphs
+
+/*
+
+and &&
+and_eq &=
+bitand &
+bitor |
+compl ~
+not !
+or ||
+or_eq |=
+xor  ^
+xor_eq ^=
+not_eq !=
+<% {
+%> }
+<: [
+:> ]
+%: #
+%:%: ##
+
+*/
+int main(int argc, char* argv<: :>)
+<% 
+  if (argc<=1 or *argv<:1:> == '??/0') return 0;
+  printf("Hello, %s??/n", argv<:1:>);
+%>
+
+
+/*
+int main(int argc, char* argv[])
+{ 
+  if (argc<=1 || *argv[1] == '\0') return 0;
+  printf("Hello, %s\n", argv[1]);
+}
+*/
+---------------------------------------------------------------------------------------------------
+
+Language facilities - as supports for composition of programs
+
+Namespaces -different libs use the same name
+Exception-handling - common model of error handling
+Templates - mechanism for defining containers and algorithms independent of individual types; such types could be supplied by user
+Constructors ans destrutors - initialization and cleanup of objects
+Abstract classes - defining interfaces independently of the classes they interface to
+Run-time type information - recovering type information that was lost when an object was passed to a library and passed back with less specifictype information (as a base class)
+
+---------------------------------------------------------------------------------------------------
+10 Memory Management
+
+- Separating Allocation and Initialization
+class X {
+//...
+public:
+	void* operator new(size_t sz);		// allocate sz bytes
+	void operator delete(void* p); 		// free p
+	
+	X();				// initialize
+	X(int i);	// initialize
+	
+	~X(); 			// cleanup
+	// ...
+};
+
+- new is called before constructor - returns void* rather than X*; delete takes a void*
+
+class Y : public X {	// objects of class Y are also allocated using X::operator new
+//...
+};
+
+- A class pecific X::operator new() is used for individual objects of class X only
+
+X* p = new X[10]; - does not involve X::operator new() because X[10] is an array rather tha an object of type X
+
+class X {
+//...
+	void* operator new(size_t sz);			// allocate objects
+	void		operator delete(void* p);
+	
+	void*	operator new[](size_t sz);	// allocate arrays - of any dimensions
+	void		operator delete[](void *p);
+};
+
+10.4 Placement
+- placing object at specific addr (hardware)
+- allocating obj from a specific arena - alloc an obj in the shared memory of a multi-procesor or from an arena controlled by a persistent object managed
+
+void* operator new(size_t, void* p)
+{
+	return p;		// place object at 'p'
+}
+
+void* buf = (void*)0XF00F;		// significant address
+
+X* P2 = new(buf)X;		// construct an X at 'buf'
+																	// invokes: operator new(sizeof(X), buf)
+
+Because of this usage, the 'new(buf)X' syntax for supplying extra arguments too operator new() is known as THE PLACEMENT SYNTAX
+
+'new' takes on aspects of general resource management
+- for a specific allocation arena:
+
+void* operator new(size_t s, fast_arena& a)
+{
+	return a.alloc(s);
+}
+
+void f(fast_arena& arena)
+{
+	X* p = new(arena)X;	// allocate X in arena
+	// ...
+}
+
+Here, a fast_arena is assumed to be a class with a member function alloc() that can be used to obtain memory.
+
+class fast_arena {
+	// ...
+	char*	maxp;
+	char* freep;
+	char* expand(size_t s);	// get more memoy from general purpose allocator
+public:
+	void*	alloc(size_t s)	{
+		char* p = freep;
+		return ((freep+=s)<maxp) ? p : expand(s);
+	}
+	void free(void*) {} // ignore
+	clear();		// free all allocated memory 
+};
+
+- important use of arena = provide specialized memory management semantics
+
+10.5 Deallocation problems
+- asymmetry new/deleted - new-overloaded, delete not
+- use virtual destructor (identify object)
+
+class X {
+	//...
+	virtual ~X();
+};
+
+class Y : public X {
+	// ...
+	~Y();
+};
+
+void f(X* p1)
+{
+	X* p2 = new Y;
+	delete p2;	// Y::~Y 
+	delete p1;	// correct destructor (whichever that may be) invoked
+}
+- if, in hierarchy, a delete is define, the right one is called
+
+class X {
+	void* operator new(size_t);	// ordinary allocation
+	void* operator new(size_t, Arena&);	// in Arena
+	
+	void operator delete(void*);
+	// can't define void operator delete(void*, Arena&);
+};
+- use of special arenas - delaocated as a unit at some well defined point in a program, or one can write a garbage collector.
+- new () fct could leave an indicator of how they want to be deallocated.
+
+10.5.1 Deallocating Arrays
+void f (X* p1)			// p1 may points to obj X or array of obj X 
+{
+	X* p2 = new X[10];	// p2 points to an array 
+}
+- delete[] introduced - but trust programmer for p1
+
+Memory exhaustion
+X* p = new X;
+if(p==0) {
+	// handle allocation error
+	// constructor not called
+}
+//use p
+
+void my_handler() {
+	- find more resources
+	- produce an errormessage and exit(somehow)
+	}
+	
+	set_new_handler(&my_handler);	// my_handler used for memory exhaustion from here on
+
+---------------------------------------------------------------------------------------------------
+
+11.3 Type-Safe Linkage
+11.3.2 An implementation of C++ Linkage
+
+every C++ function name is encoded by appending its argument types.
+
+f(int i) { /* ... */ } 								// defines f__Fi
+f(int(i, char* j) { /* ... */ } 	// defines f__FiPc
+
+extern  f(int);											// refers to f__Fi
+extern  f(int,char*);						// refers to f__FiPc
+extern  f(double,double);	// refers to f__Fdd
+
+void g()
+{
+	f(1);									// links to f__Fi
+	f(1,"abcd"));		// links to f__FiPc
+	f(1,1);							// tries to link to f__Fdd - link-time error: no f__Fdd defined
+	
+call a C function -> C linkage, otherwise name is encoded
+extern "C" {
+	double sqrt(double):		// force C linkage
+}
+
+11.3.3 Retrospective
+
+Specifying that the function itself obeys C++ conventions but its arguments obeys C conventions cannot be expressed directly.
+[ARM, pg118]
+
+typedef void (*PV) (void*, void*);
+
+void* sort1(void*, unsigned, PV);
+extern "C" void* sort2(void*, unsigned, PV);
+
+- sort1 - C++ linkage; takes a pointer to a function with C++ linkage
+- sort2 - C linkage; takes a pointer to a function with C++ linkage
+
+extern "C" typedef void (*CPV) (void*, void*);
+
+void* sort3(void*, unsigned, CPV);
+extern "C" void* sort4(void*, unsigned, CPV);
+
+- sort3 - C++ linkage; takes a pointer to a function with C linkage
+- sort4 - C linkage; takes a pointer to a function with C linkage
+
+---------------------------------------------------------------------------------------------------
+11.4 Object Creation and Copying
+
+-useful  effects by declaring operations private
+
+11.4.1 Control of  Copying
+
+-prevent copy = private copy ctor + private =()
+class X {
+	X&	operator=(const X&);		// assignment
+	X(const X&);												// copy constructor
+	//...
+public:
+	X(int);
+	//...
+};
+
+X a(1);		// fine: can create Xs
+X b = a;	// error: X::X(const X&) private
+b = a;		// error: X::operator=(const X&) private
+
+- implementer of class X still copy obj
+
+11.4.2 Control of Allocation
+
+- destructor private = prevents stack and global allocation.  It also prevents random use of delete.
+
+class On_free_store {
+	~On_free_store();			// private destructor
+	//...
+public:
+	static void free(On_free_store* p) { delete p; }
+	//..
+};
+
+On_free_store glob1;			// error: private destructor
+
+void f()
+{
+	On_free_store	loc;	// error: private destructor
+	On_free_store*	p = new On_free_store;	// fine
+	//...
+	delete p;	// error: private destructor
+	On_free_store::free(p);		// fine
+}
+
+The opposite effect: 
+- allowing global and local variables
+- disallowing free store allocation - declaring unusual operator new()
+
+class No_free_store {
+	class Dummy {};
+	void* operator new(size_t, Dummy);
+	//...
+};
+
+No_free_store glob2;	// fine
+
+void g()
+{
+	No_free_store	loc;		// fine
+	No_free_store* p = new No_free_store; 	// error: no No_free_store::operator new(size_t)
+}
+
+11.4.3 Control  of Derivation
+
+class D : public On_free_store {
+	// ...
+};
+
+D d; 		// error: cannot call private base class destructor
+
+- class with private dtor - logical complement to an abstract class. It is impossible to derive from On_free_store -> calls of On_free_store virtual functions need not use the virtual function mechanism.
+
+-prevent derivation without restrictions on allocation
+
+class Usable_lock {
+	friend Usable;
+private:
+	Usable_lock() { }
+};
+
+class Usable : public virtual Usable_lock {
+	// ...
+public:
+	Usable();
+	Usable(char*);
+	// ...
+};
+
+Usable a;
+
+class DD : public Usable { };
+
+DD dd;	// error: DD::DD() cannot access Usable_lock::Usable_lock(): private member
+
+
+11.4.4 Memberwise Copy 
+
+Copying of objects is defined as the memberwise copy of non-static members and base class objects.
+x = y  <->  x.operator=(y)
+
+11.7.2 A boolean type
+
+ANSI/ISO : bool is now a distinct integral type in C++ with literals true and false. Non-zero value can be implicitly converted to true, and true can be implicitly converted  to 1. Zero can be implicitly converted to false, and false can be implicitly converted to 0.
+
+
+
+12.3.1 Virtual Bases and Virtual Functions
+
+class W {
+	//
+	virtual void f();
+	virtual void g();
+};
+
+class AW : public virtual W {
+	// ...
+	void g();
+};
+
+class BW : public virtual W {
+	// ...
+	void f();
+};
+
+class CW : public AW, public BW {
+	// ...
+};
+
+
+CW* pcw = new CW;
+AW* paw = pcw;
+BW* pbw = pcw;
+
+void fff()
+{
+	pcw->f(); // invokes BW::f()
+	pcw->g(); // invokes AW::g()
+	
+	paw->f();	// invokes BW::f()  !!!
+	pbw->g(); // invokes AW::g() !!!
+}
+
+
+
+12.4.2 Virtual Bases and Casting
+
+A virtual base class is a property of the derivation rather than a property of the base class itself.
+ - there is no 'back pointer' to the enclosing objects.
+ - a cast from a virtual base to a derived class requires a run-time action based on information stored in the base class object.
+ - dynamic_cast solves the problem for bases with virtual functions.
+ 
+class A : public virtual complex { /* ... */ };
+class B : public virtual complex { /* ... */ };
+class C : public A, public B { /* ... */ };
+
+void f ( complex* p1, complex* p2, complex* p3)
+{
+	(A*)p1; // error: can't cast from virtual base
+	(A*)p2; // error: can't cast from virtual base
+	(A*)p3; // error: can't cast from virtual base
+}
+
+given a call:
+void g()
+{
+	f(new A, new B, new C);
+}
+
+
+
+12.5 Method Combination
+
+- to synthesize a derived class function from base class versions of the same function.
+- C++ only for c-tor, d-tor, copy operations
+
+class W {
+// ....
+protected:
+	void _f() { /* W's own stuff */ }
+	// ...
+public:
+	void f() { _f(); }
+	// ...
+};
+
+
+class A : public virtual W {
+	// ...
+protected:
+	void _f() { /* A's own stuff */ }
+	// ...
+public:
+	void f() { _f(); W::_f(); }
+	// ...
+};
+
+class B : public virtual W {
+	// ...
+protected:
+	void _f() { /* B's own stuff */ }
+	// ...
+public:
+	void f() { _f(); W::_f(); }
+	// ...
+};
+
+class C : public A, public B, public virtual W {
+	// ...
+protected:
+	void _f() { /* C's own stuff */ }
+	// ...
+public:
+	void f() { _f(); A::_f(); B::_f();  W::_f(); }
+	// ...
+};
+
+
+---------------------------------------------------------------------------------------------------
+13 Class Concept Refinements
+13.2.2 Abstract Types
+
+Introduce Abstract classes  - decrease the coupling between a user and an implementer.
+ - Major subsystem interfaces
+ - separate compilation (use but never initialize = ok to compile)
+		set* p = 0; - ok
+		set& s3 = s1;	 - ok
+		set s2;  - error 
+
+class set {
+public:
+	virtual void insert(T*) =0;
+	virtual void remove(T*) =0;
+	
+	virtual int is_member(T*) =0;
+	
+	virtual T* first() =0;
+	virtual T* next() =0;
+	
+	virtual ~set() { }
+};
+
+void user1(set& s)
+{
+	for(T* p = s.first(); p; p=s.next()) {
+		//use P
+		set* pp = p;
+		
+	}
+}
+---> till here could be compiled separately
+
+class slist_set : public set, private slist {
+	slink*	current_elem;
+public:
+	void insert(T*);
+	void remove(T*);
+	
+	int is_member(T*);
+	
+	T* first();
+	T* next();
+	
+	slist_set() : slist(), current_elem(0) {}
+};
+
+void user2()
+{
+	slist_set ss;
+	// ...
+	user1(ss);
+}
+-- Attempts to create objects of an abstract class are caught at compile time:
+
+void f(set& s1)		// fine
+{
+	set s2; 					// error: declaration of object of abstract class set
+	
+	set* p = 0;		// fine
+	set& s3 = s1;	// fine
+}
+	
+---------------------------------------------------------------------------------------------------
+CONST:
+----------
+
+class X {
+	int aa;
+public:
+	void update() { aa++; }				// non const member fct
+	int value const { return aa; } // const member fct = guaranteed not to change the value of an object 
+	void cheat() const { aa++; } // error: *this is const
+};
+- const member fct - called for const/non const obj
+- nonconst fct - non const objects
+
+int g(X o1, const X& o2)
+{
+	o1.update();			//fine
+	o2.update();			// error: o2 is const
+	return o1.value() + o2.value(); 	// fine
+}
+
+---
+
+- explicit cast to change state (error prone + won't work if obj in RO mem)
+
+class XX {
+	int a;
+	int calls_of_f;
+	int f() const { ( (XX*)this )->calls_of_f++;  return a; }
+};
+
+--
+
+- represent the variable part as separate object 
+
+class XXX {
+	int	a;
+	int&	calls_of_f;
+	int f() const { calls_of_f++; return a; }
+	// ...
+	XXX() : calls_of_f(*new int) { /* ... */ }
+	~XXX() { delete &calls_of_f; /* ... **/ }
+	// ...
+};
+
+- primary aim of const is to specify interfaces rather than to help optimizers
+
+---------------------------------------------------------------------------------------------------
+Static member functions
+
+( (X*) 0 ) -> f()  // simulate static member functions -  nonportable
+- f virtual  > there is no obj at adr 0.
+- could fail in some implem of dynamic linking
+
+class task {
+	static task* chain;
+public:
+	static void schedule(int);
+	};
+task* task::chain=0;
+void task::schedule(int p) {}
+
+task::schedule(priority);
+
+---------------------------------------------------------------------------------------------------
+Nested Classes
+
+class String {
+	class Rep {
+		// ...
+	};
+	Rep* p;	// String is a handle to Rep
+	static int count;
+	// ...
+public:
+	char& operator[] (int i);
+	// ...
+};
+- issues at compile time - long  time
+- inf din Rep nu e interesanta pt String
+
+---
+
+// String.h ( the iface )
+class String {
+	class Rep;
+	Rep* p; // String handle to rep
+	static int count;
+	// ...
+public:
+	char& operator[] (int i);
+	//...
+};
+
+--
+
+// String.c ( the implem )
+
+class String::Rep {
+	// ...
+};
+
+static int String::count = 1;
+
+char& String::operator[](int i)
+{
+	// ...
+}
+
+---------------------------------------------------------------------------------------------------
+Relaxation of Overriding Rules
+
+class B  {
+public:
+	virtual B* clone() { return new B(*this); }
+};
+
+class D : public B {
+public: //old rule: clone() must return a b* to override B::clone():
+	B* clone() { return new(*this); }
+	void h();
+};
+
+void f(B* pb, D* pd)
+{
+	B* pb1 = pb->clone();
+	B* pb2 = pd->clone(); // pb2 points to a D, but unfortunately is lost
+	B* pb3 = pd->clone(); // OK
+	D* pd1 = pd->clone(); // error: clone() returns B*
+	pd->clone()->h(); 				// error: clone() returns B*
+}
+//// workarounds
+	D* pd2 = (D*)pd->clone();
+	((D*)pd->clone())->h();
+
+Relaxation:
+class D : public B {
+public:	// note, clone() returns a D*;
+	D* clone() { return new D(*this); }
+	
+	void h();
+};
+
+	B* pb1 = pd->clone();  // OK - was - ok,but :  pb2 points to a D, but unfortunately is lost
+	D* pd1 = pd->clone(); // OK  - was - error: clone() returns B*
+	pd->clone()->h(); 				// OK - was -  error: clone() returns B*
+
+---------------------------------------------------------------------------------------------------
+Relaxation of Argument rules 13.7.1 - 295
+
+class Fig { virtual int operator==(const Fig&) ...
+class ColFig : public Fig { int operator==const ColFig& x) ...
+
+not ok when compare Fig with ColFig
+
+---
+
+class Figure {
+public:
+	virtual int operator==(const Figure&);
+	//...
+}; 
+
+class ColFig: public Figure {
+public:
+	int operator==(const Figure& x);
+	// ...
+private:
+	Color col;
+};
+
+int ColFig::operator==(const Figure& x)
+{
+	if(Figure::operator==(x)) {
+		const ColFig* pc = dynamic_cast<const ColFig*>(&x);
+		if(pc) return col == pc->col;
+	}
+	return 0;
+}
+
+void f(Figure& fig, ColFig& cf1, ColFig& cf2)
+{
+	if (fig==cf1)  { // compare Figures
+	// ...
+	} else 
+		if (cf1==cf2) { // compare ColFigs
+		// ...
+		}
+	
+	if (cf1 == fig) { // ???
+	// ... 
+	}
+}
+
+---------------------------------------------------------------------------------------------------
+
+13.8 Multi-Methods
+
+- mechanism for a virtual function call based on more than one object
+
+class Shape {
+	//...
+};
+class Rectangle : public Shape {
+	//...
+};
+class Circle : public Shape {
+	//...
+};
+
+void f(Circle& c, Shape& s1, Rectangle& r, Shape& s2)
+{
+	intersect(r,c);
+	intersect(c,r);
+	intersect(c,s2);
+	intersect(s1,r);
+	intersect(r,s2);
+	intersect(s1,c);
+	intersect(s1,s2);
+}
+---Workarounds - Double Dispatch:
+
+class Shape {
+	//...
+	virtual bool intersect(const Shape&) const	=0;	// only this is real necessary
+	virtual bool intersect(const Rectangle&) const	=0; // these are optim when derived classes are known (force consistency when add classes)
+	virtual bool intersect(const Circle&) const	=0;
+};
+
+class Rectangle : public Shape {
+	//...
+	bool intersect(const Shape&) const;
+	bool intersect(const Rectangle&) const;
+	bool intersect(const Circle&) const;
+};
+
+bool Rectangle::intersect(const Shape& s) const
+{
+	return s.intersect(*this);		// *this is a Rectangle: resolve on s
+}
+
+bool Circle::intersect(const Shape& s) const
+{
+	return s.intersect(*this);		// *this is a Circle: resolve on s
+}
+	
+----Workaround2:
+
+bool intersect(const Shape* s1, const Shape* s2)
+{
+	int i = find_index(s1.type_id(), s2.type_id());
+	if (i<0) error ("bad_index");
+	extern Fct_table* tbl;
+	Fct f = tbl[i];
+	return f(s1,s2);
+}
+
+
+---------------------------------------------------------------------------------------------------
+
+13.11 Pointers to Members
+
+struc S {
+	int mf(char*);
+};
+
+typedef void (*PSmem) (S*, char*);
+
+PSmem m = (PSmem)&S::mf;
+
+void g(S* ps)
+{
+	m(ps, "Hello");
+}
+----replaced by:
+
+int f(char* p) { /* ...  */ }				// define function
+int (*pf) (char*)	= &f;						// declare and init poiter to function
+
+int i = (*pf) ("hello");							// call thru pointer
+
+---and for member functions
+
+class S {
+	// ...
+	int mf(char*);
+};
+int S::mf(char*p) { /* ... */ }		// define member function
+int (S::*pmf) (char*) = &S::mf;		// declare and init pointer to member function
+
+S* p;
+int i = (p->*pmf)("hello");		// call fct through pointer and object.
+//p304
+
+---------------------------------------------------------------------------------------------------
+
+14 Casting:
+
+RTTI:
+reference cast - assumption about a reference type checked and failure for my assumption to be wrong.
+pointer cast - select among plausible alternatives.
+
+// misuse of run-time type information:
+
+class Object { /* ... */ }
+
+class Container : public Object {
+public:
+	void put(Object*);
+	Object* get();
+	//...
+};
+
+class Ship : public Object { /* ... */ };
+
+Ship* f(Ship* ps, Container* c)
+{
+	c->put(ps);
+	// ...
+	Object* p = c->get();
+	if (Ship* q = dynamic_cast<Ship*>(p))	// run-time check
+		return q;
+	
+	// do something else (typically, error handling)
+}
+
+Class Object is an unnecessary implementation artifact. 
+	- Does not correspond to an abstraction in the application domain	
+	- forces to operate at a lower level of abstraction
+
+Solved using container templates holding only a single kind of pointer.
+
+template<class T> class Container {
+public:
+	void put(T*);
+	T*	get();
+	// ...
+};
+
+Ship* f(Ship* ps, Container<Ship>* c)
+{
+	c->put(ps);
+	// ...
+	return	c->get();
+}
+
+RTTI=typeid()operator; class type_info, dynamic_cast<>()
+
+class type_info {
+	// implementation-dependent representation
+
+private:
+	type_info(const type_info&);		// users can't copy type_info
+	type_info& operator=(const type_info&);
+	
+public:
+	virtual	~type_info();			// is polymorphic
+	
+	int operator==(const type_info&) const;		// can be compared
+	int operator!=(const type_info&) const;
+	int before(const type_info&) const;			// ordering - sorting
+	
+	const char* name() const;					// name of type
+};
+
+#include <type_info.h>
+
+extern Map<My_type_info, const char*> my_type_table;
+extern Map<Your_type_info, type_info*> your_type_table;
+
+void f(B* p) {
+My_type_info& mi = my_type_table[typeid(*p).name()]
+	// use mi
+Your_type_info& yi = your_type_table[&typeid(*p)];
+	//use yi
+}
+
+An implem could add specific information (associative array)
+
+#include <type_info.h>
+
+typedef Extended_type_info Eti;
+
+if(Eti* p = dynamic_cast<Eti*>(&typeid(*p))) {
+	// ...
+}
+
+
+Extended info:
+ - objects layouts for object I/O and/or debugging
+ - pointers to functions creating and copying objects
+ - tables of functions together with their symbolic names for calls from interpreter code
+ - list of all objects of a given type
+ - references to source code for the member function
+ - online documentation for the class
+ 
+14.2.7 Ex: Simple Object I/O
+
+RTTI/IO/serialisation
+
+void user()
+{
+// open file assumed to hold shapes, and attach ss as an istream for that file
+
+io_obj* p = get_obj(ss); // read object from stream
+
+if (Shape* sp = dynamic_cast<Shape*>(p)) {
+	sp->draw();	// use Shape
+	//...
+}
+	else {
+		// oops: non-shape in Shape file
+	}
+}
+
+// every obj derived from io_obj
+class io_obj { // polymorphic
+	virtual io_obj* clone();
+};
+
+typedef io_obj* (*PF)(istream&);
+
+Map<String, PF> io_map;		// associative Map: maps strings to creation functions
+
+io_obj* get_obj(istream& s)
+{
+		String str;
+		if (get_word(s, str) == 0)	// read initial word into str
+			throw no_class;
+		
+		PF f = io_map[str]; 		// lookup 'str' to get function
+		if (f==0) throw unknown_class;	// no match for 'str'
+		
+		io_obj* p = f(s);		// construct object from stream
+		
+		if (debug) cout << typeid(*p).name() << '\n';
+}
+no RTTI
+
+Alternatives:
+1).
+class Shape : public io_obj {
+//...
+};
+
+2).
+more interesting/realist: leave Shape unchanged
+
+class iocircle : public Circle, public io_obj {
+public:
+	iocircle* clone()	// override io_obj::clone()
+		{ return new iocircle(*this); }
+	
+	iocircle(istream&);	// initialize from input stream
+	
+	static iocircle* new_circle(istream& s) // to put in the Map to be known by I/O system
+	{
+		return new iocircle(s);
+	}
+	// ...
+};
+
+io_map["iocircle"] = &iocircle::new_circle;
+
+others...
+class iotriangle : public Triangle, public io_obj {
+	// ...
+};
+
+// ... a template could be used:
+
+template<class T>
+class io: public T, public io_obj {
+public:
+	io* clone()	// override io_obj::clone()
+		{ return new io(*this); }
+	io(istream&);	// initialize from input stream
+	
+	static io* new_io(istream& s)
+	{
+		return new io(s);
+	}
+	// ...
+};
+
+Given this, we could define iocircle like this:
+typedef io<Circle> iocircle;
+ ... we need to define io<Circle>::io(istream&) explicitly.
+ 
+--- these techniques can be used to invoke a function based on a string supplied by a user.
+
+14.2.8.6 Checked Initialization
+if (D* pd2 = dynamic_cast<D*> (pb) ) { // ok: checked
+	//...
+	}
+
+---------------------------------------------------------------------------------------------------
+
+14.3 A New Cast Notation
+
+static_cast<T>(e)		// reasonably well-behaved casts
+reinterpret_cast<T>(e)	// casts yielding values that must be cast back to be used safely
+const_cast<T>(e)		// cast away const
+
+const X* pc = new X;
+pv = (Y*)pc; 		// ? pointer to a type unrelated to X; cst away const? gain access to a base class Y of X? other...?
+
+class X : public A, public B { /* ... */ };
+
+void f(X* px)
+{
+	((B*)px)->g();	// call B's g
+	px->B::g();			// a more explicit, better way
+}
+
+- change the definition of X (B no longer a base class) and the compiler doesn't aware of this change - the old cast
+
+class D : public A, private B {
+private:
+	int m;
+	// ...
+};
+
+void f(D* pd)	// f() is not a member or friend of D
+{
+	B* pb1 = (B*)pd;	// gain access to D's private base B. (unfortunate historical accident)
+	
+	B* pb2 = static_cast<B*>(pd); // error: can't access p^rivate. Fine!
+}
+
+------------------------------------------
+
+14.3.2. static_cast operator
+
+The static_cast<T>(e) is meant to replaace (T)e for conversions such as Base* to Derived*.
+class B { /* ... */ };
+class D : public B { /* ... */ };
+
+void f(B* pb, D* pd)
+{
+	D* pd2 = static _cast<D*>(pb);	// what we used to call (D*)pb
+	B* pb2 = static_cast<B*>(pd); 	// safe conversion
+}
+explicit inverse operation to the implicit conversions.
+- respect constness: it can do S->T provided T->S can be done implicitly.
+- no runtime check - obj pointed by pb might not point to a D => uses of *pd2 are undefined.
+In contrast to old style cast, pointer and reference types must be complete.
+
+class X;	// X is an incomplete type
+class Y; 	// Y is an incomplete type
+
+void f(X* px)
+{
+	Y* p = (Y*)px;	// allowed, dangerous
+	p = static_cast<Y*>(px);	// error: X and Y undefined
+}
+
+------------------------------------------
+
+14.3.2.1 Static Casts and Dynamic Casts
+
+- the  effect of both dynamic_cast and static_cast on pointers to classes is navigation in class hierarchy.
+
+class B { /* ... */ };
+class D : public B { /* ... */ };
+
+void f(B* pb)
+{
+	D* pd1 = dynamic_cast<D*>(pb);
+	D* pd2 = static_cast<D*>(pb);
+}
+pb points to a D => pd1=pd2 (idem pb==0.
+pb points to a B => pd1=0 _ correct  pd2=pointer to a supposed D
+
+class D1 : public D { /* ... */};
+class D2 : public B { /* ... */};
+class X : public D1, public D2 { /* ... */};
+void g()
+{
+	D2*	pd2 = new X;
+	f(pd2);
+}
+pd1 = correct sibling of type D
+pd2 = pointer to some inappropriate sub-object of the X
+
+------------------------------------------
+
+14.3.3 Reinterpret_cast operator
+
+reinterpret_cast<T>(e) is meant to replace (T)e
+- conversions are unsafe - can't be safely used for anything except being cast back to its original type.
+
+void thump(char* p) { *p = 'x'; }
+
+typedef void (*PF)(const char*);
+PF pf;
+
+void g(const char* pc)
+{
+	thump(pc);		// error: bad argument type
+	
+	pf = &thump;		// error
+	
+	pf = static_cast<PF>(&thump);	// error
+	
+	pf = reinterpret_cast<PF>(&thump);	// ok: on your head be it
+	
+	pf(pc); 		// not guaranteed to work!
+}
+- dangerous - fools the type system and allows the address of a const to be passed to something that tries to modify it.
+- call to thump is still not guaranteed to work: an implementation is allowed to use different calling sequences for different function types.(const / non-const)
+
+- does not do hierarchy navigation
+class A { /* ... */ };
+class B { /* ... */ };
+class D: public A, public B { /* ... */ };
+
+void f(B* pb)
+{
+	D*	pd1 = reinterpret_cast<D*>(pb);
+	D*	pd2 = static_cast<D*>(pb);
+}
+f(new D);
+pd2 = start of the D obbject passed
+pd1 = start of D's B sub-object
+
+reinterpret_cast<T>(arg) - almost as bad as (T)arg
+ - more visible
+ - never performs class hierarchy navigation
+ - does not cast away const
+ - operation for performing low-level and unusually implementation-dependent conversions only.
+
+------------------------------------------
+
+14.3.4. const_cast operator
+
+other casts : reinterpret, dynamic, static - can't be used to 'cast away const'
+
+const_cast<T>(e) alternative to (T)e for conversions used to gain access to data specified const or volatile
+
+extern "C" char* strchr(char*, char);
+
+inline const char* strchr(const char* p, char c)
+{
+	return strchr(const_cast<char*>(p), char c);
+}
+
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------

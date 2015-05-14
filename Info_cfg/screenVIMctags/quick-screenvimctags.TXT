@@ -1,0 +1,375 @@
+SCREEN
+
+Presumes control character Ctrl-a :
+
+
+
+.screenrc - config file
+screen -t E-Mail     2   mutt -y
+screen -t irssi      3   irssi
+screen -t mp3blaster 4
+stuff "mp3blaster\015" # trimite un enter
+
+screen -t news       5   slrn  -h  news.individual.net -f /home/cprior/.jnewsrc
+screen -t rss                  6   raggle
+screen -t root       1   su -
+
+
+
+C-a "
+ - select window from list
+
+C-a '
+ - give the window number to select window
+
+bind/bindkey
+bind -c demo1 0 select 10
+bind -c demo1 1 select 11
+...
+bindkey "^B" command -c demo1
+use: C-b 0 - selects windows 10
+
+bind - command -c demo1
+use: C-a - 0 - selects windows 10
+
+bindkey -k K1 select 11 -> F11 select window 1 - doesn't work on all terminals
+bindkey "\024" mapdefault
+
+
+CONFIGURE:
+
+
+-T term
+term term
+ - set terminal
+
+vbell off
+ - beep off
+escape ``
+
+-h nr linii in scrollback buffer
+"C-a i" to view the current setting.
+defscrollback num
+ - Default size of the scrollback buffer. 
+ - New window parameters are changed. Initial setting is 100.
+
+scrollback num
+ - Set the size of the scrollback buffer for the current windows to num lines.
+ - Default - 100 lines. 
+
+-S session 
+sessionname [name]
+-Rename the current session: the  name shows up with the process-id prepended.
+Caution: The $STY variables still has the old name.
+
+
+
+
+windows
+- list all windows on message line
+
+      Uses  the message line to display a list of all the windows: '1 shell 2*shell'
+number and the title
+-current window is marked with a `*';
+-previous window is marked with a `-';
+-all  the  windows  that  are "logged  in"  are  marked  with  a  `$';
+-a  background window that has received a bell is marked with a `!';
+-a background window that is being monitored  and  has  had activity occur is marked with an `@';
+-a window which has output logging turned on is marked with `(L)';
+-windows  occupied  by  other  users are marked with `&';
+-windows in the zombie state are marked with `Z'.
+
+If this list is too long to fit on the terminal's status line only the portion around the current window is displayed.
+
+
+Hardstatus - statusbar
+
+backtick id lifespan autorefresh cmd args...
+backtick id   - delete the backtick command with id id
+ - Program  the  backtick command with the numerical id id.  
+ - The output of such a command is used for substitution of the "%`" string escape. 
+ - Lifespan  is  the number of seconds the output is considered valid. 
+   After this time, the command is run again if a corresponding string escape is encountered.
+ - autorefresh - automatic refresh for caption and hardstatus strings (seconds).
+  Only the last line of output is used for substitution.
+ - If lifespan and autorefresh = zero, the backtick program is expected to stay in background and generate output once in a while.
+   In this case, the command is executed right away  and screen stores the last line of output. 
+   If a new line gets printed screen will automatically refresh the hardstatus or the captions.
+
+hardstatus [on|off]
+hardstatus [always]lastline|message|ignore [string]
+hardstatus string [string]
+
+activate hardstatus:
+hardstatus alwayslastline
+
+#change the hardstatus settings to give an window list at the bottom of the screen, with the time and date and with the current window highlighted:
+hardstatus string '%{= mK}%-Lw%{= KW}%50>%n%f* %t%{= mK}%+Lw%< %{= kG}%-=%D %d %M %Y %c:%s%{-}'
+
+the niceone machine name on the left:
+
+hardstatus string '%{= kG}[ %{G}%H %{g}][%= %{= kw}%?%-Lw%?%{r}(%{W}%n*%f%t%?(%u)%?%{r})%{w}%?%+Lw%?%?%= %{g}][%{Y} %d/%m %{W}%c %{g}]'
+hardstatus string '%{= kG}%H [%= %{w}%?%-Lw%?%{r}%n*%f%t%?(%u)%?%{w}%?%+Lw%?%?%= %{g}] %{Y}%c%{g}'
+
+simple -used at work:
+hardstatus string '%{= kG}%H %{Y}PROJECT%{g}[%{w}%-Lw%{r}%n*%f%t%?%u%?%{w}%+Lw%{g}%= ]%{y}%c'    - u adauga un '&' daca sunt mai multi useri pe o fereastra
+  %      the escape character itself
+  c      current time HH:MM in 24h format
+  d      day number
+  D      weekday name
+  f      flags of the window
+  H      hostname of the system
+  m      month number
+  M      month name
+  n      window number
+  s      seconds
+  t      window title
+  u      all other users on this window
+  w      all window numbers and names. With '-'  quailifier:  up  to  the
+         current  window;  with  '+'  qualifier: starting with the window
+         after the current one. Prefix L - long names.
+  W      all window numbers and names except the current one
+  y      last two digits of the year number
+  Y      full year number
+  ?      the part to the next '%?' is displayed  only  if  a  '%'  escape
+         inside the part expands to a non-empty string
+  :      else part of '%?'
+  {      attribute/color modifier string terminated by the next "}"
+  `      Substitute with the output of a 'backtick' command.  The  length
+         qualifier is misused to identify one of the commands.
+
+
+hstatus status
+- a 'status' string on the 'hardstatus'
+
+lastmsg
+-last message to harstatus line
+-see commands "msgwait" and "msgminwait" for fine tuning.
+
+
+In compile window:
+!:sed -n s/.*Error.*/\007/p
+  Sends  window  output  to  both,  the user and the sed command. The sed inserts an additional bell character (oct. 007) to the window output
+seen by screen. This will cause "Bell in window x" messages, whenever the string "Error" appears in the window.
+
+
+
+MONITORING:
+
+C-a _ switches into the monitoring mode for 30 seconds of silence, which triggers a notification in xterm's status area.
+silence [on|off|sec]
+ - monitoring for silence
+silencewait sec
+ - set default silence timewait - default 15/30
+
+monitor [on|off]
+-on - monitor for activity
+-if background - and activity - @ to the harstatus window and an activity message
+
+activity message
+- default - 'Activity in window %n'
+- use %n to windows number
+
+
+
+LOGGING:
+
+C-a H
+logfile filename
+logfile flush secs
+log [on|off]       Start/stop writing output of the current window
+
+
+C-a h
+hardcopy [-h] [file]
+-Write currently display to a file (hardcopy.%n)
+-h - dump also the contents of the scrollback buffer.
+
+hardcopy_append on|off
+-default off
+
+hardcopydir directory
+-Directory where hardcopy files will be placed.
+-If unset hardcopys are dumped in screen's current working directory.
+
+
+
+OTHER:
+
+su user pass
+- superuser - ask for password
+
+login [on|off]
+-Adds or removes the entry in the utmp database file for the current window.
+
+source file - pana la 10 nested
+
+bufferfile
+C-a : bufferfile /etc/passwd             C-a < C-a ]             C-a : bufferfile
+ 
+wall mess afiseaza mess in screen curent
+
+number [n]
+-Change the current windows number.
+-If the given number 'n' is used by another window, windows exchange their numbers.
+
+
+copy
+-Enter  copy/scrollback mode. This allows you to copy text from the current window and its history into the paste buffer.
+In this mode  a  vi like `full screen editor' is active:
+
+-Movement keys:
+  h, j, k, l move the cursor line by line or column by column.
+  0,  ^  and  $  move to the leftmost column, to the first or last non whitespace character on the line.
+  H, M and L move the cursor to the leftmost column of the top,  center or bottom line of the window.
+  + and - positions one line up and down.
+  G moves to the specified absolute line (default: end of buffer).
+  | moves to the specified absolute column.
+  w, b, e move the cursor word by word.
+  B, E move the cursor WORD by WORD (as in vi).
+  C-b and C-f scroll the display up/down a full screen.
+  g moves to the beginning of the buffer.
+-Marking
+  - space to set the first and/or second mark. - paste with C-a ]
+  - Y and y used to mark one whole line or to mark from start of line.
+  - W marks exactly one word.
+-Repeat count:
+  - These commands can be prefixed with a repeat count number: 0..9
+-Example:  "C-a  C-[  H  10 j 5 Y" will copy lines 11 to 15 into the paste buffer.
+Searching:
+ - /? Vi-like search.
+ - C-a s Emacs style incremental search forward.
+ - C-r Emacs style reverse i-search.
+
+  Note that you can prepend the newline character with a carriage return character, by issuing a "crlf on".
+
+'v'  is  for all the vi users with ":set numbers" - it toggles the left margin between column 9 and 1. 
+'a' before the final space key to toggle in append mode. Thus the  contents  of the paste buffer will not be overwritten, but is appended to.
+'A' toggles in append mode and sets a (second) mark.
+'>' sets the (second) mark and writes the contents of the paste  buffer to the screen-exchange file (/tmp/screen-exchange per default) once copy-mode is finished.
+
+This example demonstrates how to dump the whole  scrollback  buffer to that file: "C-A [ g SPACE G $ >".
+
+C-g gives information about the current line and column.
+'x'  exchanges  the first mark and the current cursor position. You can use this to adjust an already placed mark.
+
+
+
+
+
+
+VIM
+
+
+Window mode C-W
+Diff mode
+vimdiff or vi -d file, file ...
+
+config .vimrc
+syntax on filetype 		or 		filetype indent on (plugin?)
+
+.vimrc
+syntax enable
+set tabstop=2
+set shiftwidth=2
+set expandtab
+( set hidden )
+
+(:map <F2> :bnext ! <cr>
+:imap ...
+:colo peachpuff)
+
+set foldmethod=syntax (indent) zo expand/zc contract ...z
+
+- colors for putty - works well with syntax CPP
+ fg - 170/210/170
+ bg - 0/0/70
+
+
+
+
+
+
+sesiuni
+creez config apoi
+:mksession ~/.vim/minesess
+
+incarc
+vim -S ~/.vim/minesess
+
+vim file +30 (linia)
+
+creez sesiune pt vim si un batch startvim
+vim -S layout_ide.vim
+
+
+fis config pt screen
+screen  1 ./script/server
+split
+focus
+resize 15
+screen 2 til -f log/dev.log
+focus
+screen 3 bash startvim
+
+lansez cu screen -c file.cfg (inchid cu C-A (screen ) C-\ )
+pt log pot opri cu C-A-S si dau drumul cu C-A-Q .. in buffer pun mai multe linii (100 implicit) apoi cu ctrl-ESC si sus jos...
+
+
+
+
+CTAGS
+ctags --c-types=f -f functions *.c
+vim
+:vsplit functions
+
+ in fis cu fct se mai poate curata
+ :setlocal ts=99
+
+ :nnoremap <buffer> <CR> 0ye<C-W>w:tag <C-R>"<CR>    - de verificat - fuctie de selectat in fer dreapta direct functia dupa tag
+
+deplasari
+:tselect /^write_
+ctrl-]
+
+
+ctags -R
+vim -t 'myclass' (tag)
+
+
+ctags --recurse --language-force=c++ --extra=+q --fields=+i *.cpp *.h
+pt taguri multiple
+TAG cursor "g ctrl]
+:ts tag or :tselect tag
+:sts tag	- cu split
+
+
+primul tag gasit
+tag ctrl]
+:ta tag or :tag tag
+:sta tag - split next
+
+ctrl t - back/last
+
+
+in .vimrc
+set tags=./tags altfisiertags
+set autosave
+
+
+in vim
+set number - afis n liniei
+% match - paranteze/acolade
+
+
+deplasari in vim
+
+hjkl - stanga sus jos dreapta
+
+ctrl E Y rand sus/jos
+ctrl F B page forward/back
+gg/G inceput sf fisier
+W?w/b word right/back
+
+HML in pagina pozitioneaza cursor sus mj jos
+

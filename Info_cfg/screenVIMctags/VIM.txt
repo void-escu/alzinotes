@@ -1,0 +1,223 @@
+VIM
+
+
+Window mode C-W
+Diff mode
+vimdiff or vi -d file, file ...
+
+config default file: .vimrc
+syntax on filetype 		or 		filetype indent on (plugin?)
+
+.vimrc (Example)
+syntax enable
+set tabstop=2
+set shiftwidth=2
+set expandtab
+( set hidden )
+
+(:map <F2> :bnext ! <cr>
+:imap ...
+:colo peachpuff)
+
+set foldmethod=syntax (indent) zo expand/zc contract ...z
+
+.vimrc for tags
+set tags+=~/tags 
+set tags+=~/src/tags
+set autowrite  - autosave before :next :make
+
+
+- colors for putty - works well with syntax CPP
+ fg - 170/210/170
+ bg - 0/0/70
+
+
+Folding
+
+zf{motion}
+{Visual}zf
+zF
+:{range}fo[ld]
+ - create fold by range - nr lines
+ - only works when 'foldmethod' is "manual" or "marker"
+
+zd
+zD - recursiv
+zE - all
+ - delete a fold at cursor
+ - only works when 'foldmethod' is "manual" or "marker"
+
+zo
+zO recursiv
+ - open fold under cursor
+zc
+zC recursiv
+ - close fold unde cursor
+za/zA toggle 
+zv - view cursor line - open necessary folds 
+zx - Update folds, reset manualy folds
+zM - close all folds
+zR - open all folds
+zj - down - next folds
+zk - up - next fold
+
+zn/zN open all folds/return as they were before
+[z ]z - begin/end of current open fold
+
+
+Prog:
+
+:sh  :!command?	
+ - exec a shell, exec command and give retcode
+K
+ - man for keyword under cursor
+:make?
+ - exec make, print errors,(goto first)
+:cn  :cp	(?)
+ - goto next error, prev
+:cl  :cf  (?)
+ - list errors from file 
+^L ^G 
+ - refresh screen, info session 
+Gd   - go to definition 
+g^G - file details related to cursor
+*,# - goto next/prev 'string under cursor'
+ga  - ascii code
+gf  - open file under ursor
+:redir>f - redir output to file f
+:mkview [f]   - save config - set cfg
+:loadview [f] -	load config - set cfg
+:mksession ~/.vim/minesess - create session file (vim graphical config)
+vim -S ~/.vim/minesess - load a session
+
+vim file +30 - edit file from line 30
+% - match paired (, [, {, comment, #define
+set number - print line numbers
+
+if we create a batch to launch vim we can configure it for a screen window in .screenrc
+vim -S layout_ide.vim
+
+Tags
+
+:ta t - go to tag
+:nta  - go to n tag
+^] ^T - tag under cursor/back
+:ts t - tag selection from list
+:tj t - go to tag or select from is if many
+:tags - print list of tags
+:tl   - go to last used
+^W}  :pt t - preview of curso tag, t
+^W]   - split win and show cursor tag
+^Wz or :pc - close preview win
+
+^Ws ^Wv or :split :vsplit, :vs - split
+^Wn or :new - new window
+^Wo or :on  - big window (= all win equals)
+^Whjkl   - go to window left, dn, up, right
+^Ww ^W^W - go to backgrund/foreground window
+
+
+EDIT
+
+use ! - to force any command
+:e f	- edit file
+:wn wN - save and edit next/prev
+:n N  - edit next/prev
+:q    -	quit
+:wq x - exit
+:r f	- read file into
+:r! cmd	- insert the cmd result at the cursor
+:args	- argument list
+%     - all file
+
+, ;  - lines separator, first line
+n	   - line number
+. $  - current line, last line
+% *  - all file, visual selection
+'t   - marker 't' position
+
+
+hjkl  left,down,up,right
+b w	 - word left, right
+{ }  - pharagraph prec/next
+( )  - phrase before/next
+^  $ - line - first/last
+n%   - %percent of doc
+n|   - column n
+%    - match paired (, [, {, comment, #define
+nH nL- nlines from up/dn window
+M    - middle screen
+^E ^Y	- scroll line up/dn
+^D ^U	- scroll half page up/dn
+^F ^B	- scroll page forward/back
+zt - line at top
+zz - line to middle 
+zb - line to bottom
+gg/G - first/last line
+`.  - go to the last line edited
+
+mc - mark char a..Z
+`c - go to mark
+'c - go to beginig of the line where mark
+:marks - affiche la liste des marques actives
+:jumps - affiche la liste des sauts
+
+iI - insert before/after cursor
+aA, oO - append, overwrite
+r  - replace letter
+R  - replace from cursor
+C  - replace to EOL
+~  - change case 
+n<< n>> - indent n characters
+
+x X	- del char under/before cursor
+dw/d- delete word/line
+D   - delete to EOL
+J gJ- join line /wihout spaces
+
+"x    - registry for copy action
+:reg  - print registers
+ym    - copy text from cursor to ... mode word,^ begin,$end,`m `n-from m to n
+yy or Y	- copy line
+p P   - paste after/before current line
+]p [p - with indent
+
+u U	  - undo last, Undo all last
+. ^R	- repeat the last command, redo
+
+:se[t]     - Show different from default value
+:se[t] all - Show all but terminal options
+:se[t] termcap - All terminal options. not GUI
+:se[t] {option}? - Show value of {option}.
+:se[t] {option}		Toggle option: set, switch it on.
+			Number option: show value.
+			String option: show value.
+:se[t] no{option}	Toggle option: Reset, switch it off.
+:se[t] {option}&	Reset option to its default value.  
+:se[t] {option}&vi	Reset option to its Vi default value. {not in Vi}
+:se[t] {option}&vim	Reset option to its Vim default value. {not in Vi}
+:se[t] all&		Set all options, except terminal options, to their default value.
+	The values of 'term', 'lines' and	'columns' are not changed. {not in Vi}
+
+Gvim
+Visual selection, although common in applications today, is a key feature that 
+differentiates vim from traditional vi.
+
+To cut (or copy) and paste using visual selection:
+1. Position the cursor at the beginning of the text you want to cut/copy.
+2. Press v to begin character-based visual selection (or upper case V to select 
+whole lines, or Ctrl-V for a vertical block).
+3. Move the cursor to the end of the text to be cut/copied. (While selecting text, 
+you can perform searches and other advanced movement, a feature that sets vim 
+apart from most other editors.)
+4. Press d (as in "delete") to cut, or y (as in "yank", which I imagine meaning 
+"yank so hard and fast that it leaves a copy behind") to copy.
+5. Move the cursor to the desired paste location.
+6. Press p to paste after the cursor, or P to paste before.
+
+In gvim, visual marking (steps 1-3) can be replaced by selecting text using a mouse 
+or similar pointing device, although I strongly prefer to navigate using the keyboard.
+
+Bonus tip: To replace the selected text with new text (to be entered by you), 
+press 'c' instead of 'd' or 'p' on step 4.  This deletes the selection and leaves you 
+in insert mode.  Then, instead of (or prior to) steps 5-6, type your replacement text.

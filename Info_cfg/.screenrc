@@ -1,0 +1,6 @@
+term dtterm
+defscrollback 20000
+hardstatus alwayslastline "%{= kG}%H %{Y}cpopescu_Linux%{g}[%{w}%-Lw%{r}%n*%f%t%?%u%?%{w}%+Lw%{g}%= ]%{y}%c"
+
+vbell
+

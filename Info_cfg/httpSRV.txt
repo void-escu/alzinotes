@@ -1,0 +1,66 @@
+import sys
+import BaseHTTPServer
+from SimpleHTTPServer import SimpleHTTPRequestHandler
+
+
+HandlerClass = SimpleHTTPRequestHandler
+ServerClass  = BaseHTTPServer.HTTPServer
+Protocol     = "HTTP/1.0"
+
+port=0
+if sys.argv[1:]:
+    port = int(sys.argv[1])
+else:
+    port = 8000
+server_address = ('127.0.0.1', port)
+
+HandlerClass.protocol_version = Protocol
+httpd = ServerClass(server_address, HandlerClass)
+
+sa = httpd.socket.getsockname()
+print "Serving HTTP on", sa[0], "port", sa[1], "..."
+httpd.serve_forever()
+
+--------------------------------------------------------
+
+import sys
+import BaseHTTPServer
+from SimpleHTTPServer import SimpleHTTPRequestHandler
+
+HandlerClass = SimpleHTTPRequestHandler
+ServerClass  = BaseHTTPServer.HTTPServer
+
+HandlerClass.protocol_version = "HTTP/1.0"
+httpd = ServerClass(('127.0.0.1', 8899), HandlerClass)
+
+sa = httpd.socket.getsockname()
+print "Serving HTTP on", sa[0], "port", sa[1], "..."
+httpd.serve_forever()
+-------------------------------------------------------------
+
+import BaseHTTPServer as bhs
+from SimpleHTTPServer import SimpleHTTPRequestHandler as shrh
+
+hc= shrh
+sc=bhs.HTTPServer
+hc.protocol_version = "HTTP/1.0"
+sc(('127.0.0.1', 8899), hc).serve_forever()
+10.176.25.57
+
+-------
+
+
+from BaseHTTPServer import HTTPServer as sc
+from SimpleHTTPServer import SimpleHTTPRequestHandler as hc
+
+hc.protocol_version = "HTTP/1.0"
+sc(('127.0.0.1', 8899), hc).serve_forever()
+10.176.25.57
+
+
+while :; do nc -l 80 < my_nice.html ; done
+
+nc -l -p $PORT > img.jpg
+cat img.jpg | nc $MACHINE $PORT
+
+python -m SimpleHTTPServer 8000

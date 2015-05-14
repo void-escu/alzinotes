@@ -1,0 +1,39 @@
+# Window sizes and visibility
+if PLAT_WIN
+	position.left=70
+	position.top=0
+
+
+#scintilla.org/SciteFAQ.html - black background
+style.*.32=$(font.base),back:#1F2F2F,fore:#ffffff
+style.*.33=back:#C0C0C0,$(font.base)
+style.*.37=fore:#939393
+caret.fore=#FFFFFF
+selection.alpha=75
+selection.back=#FFFFFF
+colour.keyword=fore:#649bff
+colour.operator=fore:#727272
+
+
+tabbar.visible=1
+tabbar.hide.one=1
+tabbar.multiline=1
+
+line numbers:
+# Sizes and visibility in edit pane
+line.margin.visible=1
+line.margin.width=4
+
+# Indentation
+tabsize=4
+indent.size=4
+
+folding:
+fold.on.open=1
+fold.comment=1
+
+
+if PLAT_WIN
+	font.base=font:Verdana,size:9
+	font.small=font:Verdana,size:7
+

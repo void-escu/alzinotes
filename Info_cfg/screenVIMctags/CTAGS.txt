@@ -1,0 +1,43 @@
+CTAGS
+
+ctags --c-types=f -f functions *.c
+
+using vim
+:vsplit functions
+
+try to clean a litle: 
+:setlocal ts=99
+
+shortcut to select a tag??
+ :nnoremap <buffer> <CR> 0ye<C-W>w:tag <C-R>"<CR>    - de verificat - functie de selectat in fer dreapta direct functia dupa tag
+
+:tselect /^write_
+ctrl-] - goto tag
+
+
+ctags -R
+vim -t 'myclass' (tag)
+
+
+ctags --recurse --language-force=c++ --extra=+q --fields=+i *.cpp *.h
+
+ctags -R  -h ".h.H.hh.hpp.hxx.h++" --language-force=c++ --extra=+q --fields=+i
+
+pt taguri multiple
+TAG cursor "g ctrl]
+:ts tag or :tselect tag
+:sts tag	- cu split
+
+
+primul tag gasit
+tag ctrl]
+:ta tag or :tag tag
+:sta tag - split next
+
+ctrl t - back/last ?C-T?
+
+
+.vimrc
+set tags+=~/tags 
+set tags+=~/src/tags
+set autowrite  - autosave before :next :make

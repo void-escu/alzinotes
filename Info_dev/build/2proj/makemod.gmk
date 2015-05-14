@@ -1,0 +1,32 @@
+mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
+current_dir := $(notdir $(patsubst %/,%,$(dir $(mkfile_path))))
+
+DIRS := ${shell find modules/*  -maxdepth 0 -type d -print}
+
+ROOT_DIRECTORY= $(dir $(mkfile_path))
+DIRS2 := ${sort ${dir ${wildcard $(ROOT_DIRECTORY)modules/*/ }}}
+
+OUT_BINDIR ?= $(ROOT_DIRECTORY)BIN
+export OUT_BINDIR
+
+
+PURE_MAKE = invoke_make() \
+	{ \
+		pushd $$1 && make $$2 || exit ; popd; \
+	}; invoke_make
+
+.PHONY: clean 
+
+
+alll: $(DIRS2)
+	@$(foreach tgt,$(DIRS), $(PURE_MAKE) $(tgt) SHARED ;)
+	#@$(foreach tgt,$(DIRS), $(PURE_MAKE) $(tgt) $@ ;)
+	#for tgt in $(DIRS); do \
+	#	$(PURE_MAKE) $$tgt ; \
+	#done
+
+clean: $(DIRS2)
+	@echo Cleaning : $<
+	for tgt in $(DIRS); do \
+		$(PURE_MAKE) $$tgt clean ; \
+	done

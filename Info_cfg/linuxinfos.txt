@@ -1,0 +1,112 @@
+original prompt: ${debian_chroot:+($debian_chroot)}\u@\h:\w\$
+---
+
+Both Kshell and bash expand variables at the time PS1 is written to the tty, and thus using $() the shell can be coaxed into doing what you want:
+
+PS1='$(if [[ $USER == root ]]; then  echo "$PWD#"; else echo "$PWD%"; fi)'
+
+---
+case "$b" in
+ 5) a=$c ;;
+ *) a=$d ;;
+esac
+
+Or
+
+ [[ $b = 5 ]] && a="$c" || a="$d"
+
+---
+a=$([ "$b" == 5 ] && echo "$c" || echo "$d")
+
+--------------------
+
+ find . -name ".*" -exec sh -c 'a=$1; echo fisieru: $a  : si : $1' - {}  \;
+
+--------------------
+
+You could "reset" your repository to any commit you want (e.g. 1 month ago).
+
+Use git-reset for that:
+
+git clone [remote_address_here] my_repo
+cd my_repo
+git reset --hard [ENTER HERE THE COMMIT HASH YOU WANT]
+
+-------------------------------
+
+ git config –global –unset http.proxy
+
+git config --global http.proxy %HTTP_PROXY%
+
+---------------------
+[12213.530000] exynos-mixer s5p-mixer: stop latency exceeded, new value 958 ns
+[12213.530000] exynos-hdmi exynos4-hdmi: stop latency exceeded, new value 584 ns
+[12213.610000] exynos-hdmi exynos4-hdmi: state save latency exceeded, new value 25515209 ns
+[12213.610000] exynos-hdmi exynos4-hdmi: stop latency exceeded, new value 708 ns
+[12213.620000] thermal_sys: An unsual temperature reading was found: (225 C) ignore it.
+
+Message from syslogd@kali at Nov 13 16:08:48 ...
+ kernel:[12213.620000] thermal_sys: An unsual temperature reading was found: (225 C) ignore it.
+  CC [M]  fs/jfs/jfs_inode.o
+
+
+[ 1326.150137] exynos-hdmi exynos4-hdmi: state restore latency exceeded, new value 1630709 ns
+
+  LD [M]  drivers/media/rc/ir-rc5-decoder.ko
+  CC      drivers/media/rc/ir-rc5-sz-decoder.mod.o
+[ 5041.086798] exynos-hdmi exynos4-hdmi: state save latency exceeded, new value 25530333 ns
+[ 5041.089244] exynos-hdmi exynos4-hdmi: stop latency exceeded, new value 875 ns
+  LD [M]  drivers/media/rc/ir-rc5-sz-decoder.ko
+  CC      drivers/media/rc/ir-rc6-decoder.mod.o
+
+-------------------------------
+
+nc -l -p $PORT > img.jpg
+
+cat img.jpg | nc $MACHINE $PORT
+
+-q 1 ?
+
+--
+Server side:
+
+nc -k -l 10000 < my_in_file
+
+Client side:
+
+echo "bye" | netcat 192.168.1.6 10000 > my_in_file -
+
+
+echo "bye" | netcat 10.176.25.57 10000 > cfgbase.tgz -
+
+---
+cat MY_FILE - | ncat ...
+
+
+----------------------------------
+
+
+python -m SimpleHTTPServer 7777
+
+expand -t4 oldfilename.py > newfilename.py
+tabnany,
+reindent, trim : Change Python (.py) files to use 4-space indents and no hard tab characters. Also trim excess spaces and tabs from ends of lines, and remove empty lines at the end of files. Also ensure the last line ends with a newline.
+
+------------------------------------
+ 2 down vote
+	
+
+By default, there is no place where all commands are recorded and kept indefinitely, although ~/.bash_history contains the past few commands (if you use bash, which is the default shell in Ubuntu).
+
+If you want every command typed in bash recorded forever, you have to set it up yourself. For example, you can put the following in your ~/.bashrc file to log all the commands typed in a bash shell to the file ~/.command_log:
+
+# log every command typed and when
+if [ -n "${BASH_VERSION}" ]; then
+    trap "caller >/dev/null || \
+printf '%s\\n' \"\$(date '+%Y-%m-%dT%H:%M:%S%z')\
+ \$(tty) \${BASH_COMMAND}\" 2>/dev/null >>~/.command_log" DEBUG
+fi
+
+The above sets a trap on DEBUG, which is executed just before an ordinary command is executed. The caller built-in is used to test whether the command is being typed at an interactive shell or run via something like ~/.bashrc. The value ${BASH_COMMAND} contains the command currently being executed.
+
+---------------------------------------
