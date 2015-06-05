@@ -1271,7 +1271,22 @@ inline const char* strchr(const char* p, char c)
 }
 
 ---------------------------------------------------------------------------------------------------
+
+template <class V, class U> V narrow(U u)
+{
+  V v =u;
+  if (v!=u) throw bad_narrowing;
+  return v;
+}
+char c;   // result might not fit in a char
+short s;  // result might not fit in a short
+int i;    // might overflow
+char, short are promoted to int before arithmethic
+
+explicit cast for narrowing static_cast<char>(c+1)  or could use dynamic cast
+
 ---------------------------------------------------------------------------------------------------
+
 ---------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------------------------
