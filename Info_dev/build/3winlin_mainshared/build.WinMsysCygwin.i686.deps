@@ -1,0 +1,13 @@
+TARGET_NAME:=alldirs
+LOCAL_LIBS:=
+
+#CXX := g++
+#CXX_FLAGS +=
+#LD_FLAGS += 
+#DLL_FLAGS +=
+
+INCLUDEDIRS:=/mingw32/include/
+SYS_LIBDIR:=/mingw32/lib/
+SYS_LIBS:=boost_filesystem-mt boost_system-mt boost_serialization-mt
+
+

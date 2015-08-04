@@ -1,0 +1,12 @@
+TARGET_NAME:=alldirs
+LOCAL_LIBS:=
+
+#CXX := g++
+CXX_FLAGS += -fPIC
+#LD_FLAGS += 
+#DLL_FLAGS +=
+
+INCLUDEDIRS:= 
+SYS_LIBDIR:=/usr/lib/arm-linux-gnueabih/
+SYS_LIBS:=boost_filesystem boost_system boost_serialization   
+

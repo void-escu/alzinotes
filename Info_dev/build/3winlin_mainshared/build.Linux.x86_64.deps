@@ -1,0 +1,12 @@
+TARGET_NAME:=alldirs
+LOCAL_LIBS:=
+
+#CXX := g++
+CXX_FLAGS += -fPIC
+#LD_FLAGS += 
+#DLL_FLAGS +=
+
+INCLUDEDIRS:= 
+SYS_LIBDIR:=/usr/lib/x86_64-linux-gnu/
+SYS_LIBS:=boost_filesystem boost_system boost_serialization   
+
