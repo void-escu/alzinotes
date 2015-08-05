@@ -49,7 +49,6 @@ LOCAL_LIBDIR:=$(OUT_BINDIR)
 LIBDIRS:=$(SYS_LIBDIR) $(LOCAL_LIBDIR)
 LIBRARIES:= $(SYS_LIBS) $(LOCAL_LIBS)
 
-
 # Uncomment to build all when make file changes
 SPECDEP=Makefile
 
@@ -66,8 +65,17 @@ INCLUDEPATH := $(foreach includedir,$(INCLUDEDIRS),-I$(includedir))
 LIBPATH := $(foreach libdir,$(LIBDIRS),-L$(libdir)) 
 LIBS := $(foreach library,$(LIBRARIES),-l$(library))
 
+# by default link with our generated lib
+# when there are no sources for lib, we do not link with any internal library
+ifeq ("$(D_OBJ_FILES)","") 
+LINKLIBTARGET:=
+else
+LINKLIBTARGET:=-l$(TARGET_NAME)
+endif
 
-.PHONY: all clean clean_deps SHARED MAIN_TARGET rundir 
+
+
+.PHONY: all clean clean_deps SHARED ALL rundir dirs_structure
 
 all: 
 	@echo TARGETS accepted: ALL, SHARED, clean, clean_deps, rundir, dirs_structure
@@ -104,10 +112,12 @@ ALL: $(SHARED_OBJ) $(TARGET)
 SHARED: $(SHARED_OBJ)
 
 $(SHARED_OBJ): $(D_OBJ_FILES)
-	$(CXX) $(DLL_FLAGS) $(LIBPATH) $(LD_FLAGS) -o $@ $^ $(LIBS)
+ifneq ("$(LINKLIBTARGET)","")
+	$(CXX) $(DLL_FLAGS) $(LIBPATH) $(LD_FLAGS) -o $@ $^ $(LIBS) 
+endif
 
-$(TARGET): $(M_OBJ_FILES) 
-	$(CXX) $(LIBPATH) $(LD_FLAGS) -o $@ $^ $(LIBS) -l$(TARGET_NAME)
+$(TARGET): $(M_OBJ_FILES)
+	$(CXX) $(LIBPATH) $(LD_FLAGS) -o $@ $^ $(LIBS) $(LINKLIBTARGET)
 
 $(D_OBJDIR)/%.o:  $(D_SRCDIR)/%.cpp | $(OBJDIR) $(OUT_BINDIR)
 	$(CXX) $(INCLUDEPATH) $(CXX_FLAGS) -c -o $@ $<
