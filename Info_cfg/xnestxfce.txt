@@ -1,0 +1,10 @@
+Xnest -ac :22 &
+export DISPLAY=:22
+xfce4-session &
+
+
+xterm -display :22
+
+/etc/alternatives/x-window-manager -display :22
+
+

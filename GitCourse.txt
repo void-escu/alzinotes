@@ -35,6 +35,22 @@ git config --global core.editor "vim"
 
 color.ui true
 
+git config --global http.proxy http://proxyuser:proxypwd@proxy.server.com:8080
+git config --global https.proxy https://proxyuser:proxypwd@proxy.server.com:8080
+
+reset proxy:
+
+git config --global --unset http.proxy
+git config --global --unset https.proxy
+
+check if proxy;
+
+git config --global --get http.proxy
+git config --global --get https.proxy
+
+
+
+
 unix git completion
 DL O not zero:  curl -OL https://github.com/git/git/raw/master/contrib/completion/git-completion.bash
 mv to  ~/.git-completion.bash

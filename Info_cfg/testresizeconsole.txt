@@ -1,0 +1,102 @@
+
+my solution for raspberry pi : add these lines in .bashrc :
+
+#
+# ADDED
+#
+function rsz {
+  eval $(resize)
+}
+
+if [ $(tty) == '/dev/ttyAMA0' ]; then
+        trap rsz DEBUG
+fi
+
+OR:
+
+#
+# ADDED
+#
+function rsz {
+  eval $(resize)
+}
+
+if [ $(tty) == '/dev/ttyAMA0' ]; then
+        export PROMPT_COMMAND=rsz
+fi
+
+- only drawback is that the first command has old values, so just hit enter after a resize of the screen
+
+OR:
+without resize:
+
+export PS1_save='\[\033[$([ $? == 0 ] && echo "32m" || echo "31m" )\][$(date +%H:%M)][\u@\h:\w]$\[\033[0m\] '
+
+resizemn() {
+  IFS=$';\x1B[' read -p $'\x1B7\x1B[r\x1B[999;999H\x1B[6n\x1B8' \
+                     -d R -rst 1 _ _ LINES COLUMNS _ < /dev/ttyAMA0 &&
+  stty cols $COLUMNS rows $LINES
+}
+
+just() {
+  set -- $? "$@"
+  "${@:2}"
+  return $1
+}
+
+
+export PS1="$PS1_save"'$(just resizemn)'
+
+
+-----------------------------------------
+
+WEB searches:
+
+this solution I found at: http://blog.sam.liddicott.com/2015/02/finding-xterm-terminal-window-size-for.html
+
+I adapted it to my PI environment:
+check the terminal that is not /dev/ttyAMA0:
+
+resize() {
+  IFS=$';\x1B[' read -p $'\x1B7\x1B[r\x1B[999;999H\x1B[6n\x1B8' \
+                     -d R -rst 1 _ _ LINES COLUMNS _ < /dev/tty &&
+  stty cols $COLUMNS rows $LINES
+}
+
+just() {
+  set -- $? "$@"
+  "${@:2}"
+  return $1
+}
+
+export PS1_save='\[\033[$([ $? == 0 ] && echo "32m" || echo "31m" )\][$(date +%H:%M)][\u@\h:\w]$\[\033[0m\] '
+export PS1="$PS1_save"'$(just resize)'
+
+
+- check also that the PS1 is a valid prompt. By default, the prompt on PI for root(ubuntu) does not work with this concatenation
+  - it has this value: '\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\u@\h:\w\$'
+
+---------------------------------
+
+This solution needs to have the 'resize' command installed 
+- xterm comes with resize
+
+if [ $(tty) == '/dev/ttyAMA0' ]; then
+        trap resize DEBUG
+fi
+
+#
+# ADDED by me
+#
+function rsz {
+  eval $(resize)
+}
+
+if [ $(tty) == '/dev/ttyAMA0' ]; then
+        #trap resize DEBUG
+        #trap $(eval `resize`) DEBUG
+        export PROMPT_COMMAND=rsz
+fi
+
+
+
